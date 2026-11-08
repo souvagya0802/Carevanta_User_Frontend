@@ -194,6 +194,18 @@ export async function request<T>(path: string, opts: RequestOptions = {}): Promi
 /** Reads anyone may make; see api.get. */
 export const isPublicPath = (path: string) => /^\/(public|discovery)\//.test(path);
 
+/**
+ * A raw authorised fetch for streaming responses (the live notification stream).
+ * Uses the current session, refreshing it once on 401, like request().
+ */
+export async function authorizedFetch(path: string, init: RequestInit = {}): Promise<Response> {
+  if (!accessToken && session.hasRefreshToken()) await refresh();
+  const go = () => fetch(`${API_BASE}/api/v1${path}`, { ...init, headers: { ...(init.headers as Record<string, string> | undefined), ...(accessToken ? { authorization: `Bearer ${accessToken}` } : {}) } });
+  const res = await go();
+  if (res.status === 401 && (await refresh())) return go();
+  return res;
+}
+
 export const api = {
   /**
    * Public reads (/public/…, /discovery/…) go without the Authorization header: they never wait

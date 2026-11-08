@@ -54,7 +54,8 @@ function BookInner() {
   const selfProfile = profiles.data?.find((p) => p.relationship === 'SELF');
   const activeProfile = profileId || selfProfile?.id || '';
   const onlineAvailable = payments.data?.activeGateway && payments.data.activeGateway !== 'NONE';
-  const step = done ? 4 : !chosen ? (activeLocation ? 1 : 0) : !activeProfile ? 2 : 3;
+  // The last step is done only once the clinic has confirmed; a request that is still waiting keeps it highlighted as pending.
+  const step = done ? (done.status === 'CONFIRMED' ? 4 : 3) : !chosen ? (activeLocation ? 1 : 0) : !activeProfile ? 2 : 3;
   const place = doctor.data?.doctor?.practisesAt.find((a) => a.locationId === activeLocation);
 
   // One random key per booking attempt (lib/attempt.ts): a double tap or retry reuses it and sends one
@@ -77,7 +78,7 @@ function BookInner() {
       <div className="mx-auto max-w-2xl space-y-4">
         <div className="flex items-center gap-3"><button type="button" onClick={() => router.back()} aria-label="Back" className="flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-card"><ArrowLeft size={18} /></button><h1 className="text-xl font-extrabold">Book an appointment</h1></div>
         {doctor.data?.doctor && <Card className="flex items-center gap-3"><Avatar name={doctor.data.name} /><div className="min-w-0 flex-1"><p className="truncate text-sm font-extrabold">{doctor.data.name}</p><p className="truncate text-xs text-muted">{doctor.data.doctor.specialities[0]?.name ?? 'Doctor'}</p></div></Card>}
-        <StepBar steps={['Place', 'Time', 'Patient', 'Confirm']} current={Math.min(step, 3)} />
+        <StepBar steps={['Place', 'Time', 'Patient', 'Confirm']} current={step} />
 
         {done ? (
           <Card className="animate-scale-in text-center">

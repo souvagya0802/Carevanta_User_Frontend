@@ -127,3 +127,38 @@ button, [role="button"] { transition: transform 120ms ease, background-color 160
 .when-no-session { display: contents; }
 html[data-session="1"] .when-session { display: contents; }
 html[data-session="1"] .when-no-session { display: none; }
+
+/* ─── Live alerts (components/alerts/alert-center.tsx) ───────────────────── */
+@keyframes alert-drop { 0% { opacity: 0; transform: translateY(-24px) scale(0.96); } 100% { opacity: 1; transform: none; } }
+@keyframes alert-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes alert-rise {
+  0% { opacity: 0; transform: translateY(60px) scale(0.92); }
+  60% { opacity: 1; transform: translateY(-6px) scale(1.01); }
+  100% { opacity: 1; transform: none; }
+}
+/* Scales with the `scale` property so it never fights the centring `translate` on the same element. */
+@keyframes alert-bounce {
+  0% { scale: 0.4; }
+  55% { scale: 1.12; }
+  75% { scale: 0.95; }
+  100% { scale: 1; }
+}
+@keyframes alert-ring {
+  0% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--ring) 35%, transparent); }
+  100% { box-shadow: 0 0 0 14px color-mix(in srgb, var(--ring) 0%, transparent); }
+}
+@keyframes critical-pulse {
+  0% { box-shadow: 0 0 0 0 rgb(255 255 255 / 0.45); transform: scale(1); }
+  70% { box-shadow: 0 0 0 34px rgb(255 255 255 / 0); transform: scale(1.06); }
+  100% { box-shadow: 0 0 0 0 rgb(255 255 255 / 0); transform: scale(1); }
+}
+.alert-drop { animation: alert-drop 360ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+.alert-fade { animation: alert-fade 220ms ease-out both; }
+.alert-rise { animation: alert-rise 480ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+.alert-bounce { animation: alert-bounce 700ms 180ms cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+.alert-ring { animation: alert-ring 1.6s 600ms ease-out infinite; }
+.critical-pulse { animation: critical-pulse 1.4s ease-out infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .alert-drop, .alert-fade, .alert-rise, .alert-ring, .critical-pulse { animation: none; }
+  .alert-bounce { animation: none; }
+}

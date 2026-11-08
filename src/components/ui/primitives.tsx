@@ -2,7 +2,7 @@
 
 import { clsx } from 'clsx';
 import Link from 'next/link';
-import { Eye, EyeOff, Loader2, Star, X, type LucideIcon } from 'lucide-react';
+import { Check, Eye, EyeOff, Loader2, Star, X, type LucideIcon } from 'lucide-react';
 import { forwardRef, useEffect, useId, useRef, useState, type ButtonHTMLAttributes, type InputHTMLAttributes, type ReactNode, type SelectHTMLAttributes, type TextareaHTMLAttributes } from 'react';
 
 /**
@@ -190,16 +190,33 @@ export function Sheet({ open, onClose, title, description, children, footer, siz
   );
 }
 
+/**
+ * Progress through a short flow. `current` is the index of the step being worked on;
+ * pass `steps.length` once the flow is finished so every step reads as done.
+ * Done steps show a tick, the current step is highlighted, later steps are muted, and
+ * a connector only turns green once the step before it is complete.
+ */
 export function StepBar({ steps, current }: { steps: string[]; current: number }) {
+  const complete = current >= steps.length;
   return (
-    <ol className="flex items-center gap-2" aria-label="Progress">
-      {steps.map((s, i) => (
-        <li key={s} className="flex flex-1 items-center gap-2">
-          <span className={cx('flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-bold', i < current ? 'bg-success text-white' : i === current ? 'bg-brand text-white shadow-glow' : 'bg-soft text-muted')} aria-current={i === current ? 'step' : undefined}>{i + 1}</span>
-          <span className={cx('hidden truncate text-xs font-semibold sm:block', i === current ? 'text-ink' : 'text-muted')}>{s}</span>
-          {i < steps.length - 1 && <span className={cx('h-0.5 flex-1 rounded-full', i < current ? 'bg-success' : 'bg-line')} />}
-        </li>
-      ))}
+    <ol className="flex items-center" aria-label="Progress">
+      {steps.map((s, i) => {
+        const done = i < current;
+        const active = !complete && i === current;
+        return (
+          <li key={s} className={cx('flex min-w-0 items-center', i < steps.length - 1 ? 'flex-1' : 'flex-none')}>
+            <span
+              className={cx('flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-xs font-bold transition-colors', done ? 'bg-success text-white' : active ? 'bg-brand text-white shadow-glow ring-4 ring-primary/20' : 'bg-soft text-muted')}
+              aria-current={active ? 'step' : undefined}
+              aria-label={`${s}: ${done ? 'done' : active ? 'current' : 'upcoming'}`}
+            >
+              {done ? <Check size={14} strokeWidth={3} aria-hidden /> : i + 1}
+            </span>
+            <span className={cx('ml-2 hidden truncate text-xs font-semibold sm:block', active ? 'text-ink' : done ? 'text-success' : 'text-muted')}>{s}</span>
+            {i < steps.length - 1 && <span className={cx('mx-2 h-0.5 min-w-4 flex-1 rounded-full transition-colors', done ? 'bg-success' : 'bg-line')} aria-hidden />}
+          </li>
+        );
+      })}
     </ol>
   );
 }

@@ -36,7 +36,7 @@ const STYLE: Record<Kind, { bar: string; icon: ReactNode }> = {
 };
 
 /**
- * Toasts appear at the top centre of the screen (founder rule: every toast, in every app, shows at the top),
+ * Toasts appear at the top right of the screen, full width on phones (founder rule 2026-11-08: every toast, in every app, top right),
  * below the notch/status bar on phones, above dialogs. The same message raised twice while it is still
  * visible is shown once, so a screen and a shared hook reporting the same failure do not stack duplicates.
  */
@@ -72,7 +72,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   return (
     <Ctx.Provider value={value}>
       {children}
-      <div aria-live="polite" className="pointer-events-none fixed inset-x-0 top-[max(16px,env(safe-area-inset-top))] z-[100] flex flex-col items-center gap-2 px-4">
+      <div aria-live="polite" className="pointer-events-none fixed inset-x-0 top-[max(16px,env(safe-area-inset-top))] z-[100] flex flex-col items-stretch gap-2 px-3 sm:items-end sm:px-5">
         {items.map((t) => (
           <div
             key={t.id}

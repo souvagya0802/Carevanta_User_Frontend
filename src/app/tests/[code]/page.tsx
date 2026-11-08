@@ -50,7 +50,7 @@ function TestInner() {
   const [profileId, setProfileId] = useState('');
   const [rxId, setRxId] = useState('');
   const [rxError, setRxError] = useState<string | null>(null);
-  const [done, setDone] = useState<{ id: string; reference: string } | null>(null);
+  const [done, setDone] = useState<{ id: string; reference: string; status?: string } | null>(null);
   const attempt = useAttempt('dx');
 
   const activeProfile = profileId || profiles.data?.find((p) => p.relationship === 'SELF')?.id || '';
@@ -62,7 +62,8 @@ function TestInner() {
   const activeRx = requiresRx ? (rx.usable.some((r) => r.id === rxId) ? rxId : rx.usable[0]?.id ?? '') : '';
   const isImaging = service?.category === 'IMAGING' || lab.data?.type === 'IMAGING_CENTRE' || /^(IMG|SCAN)_/i.test(serviceCode);
   const steps = requiresRx ? ['Choose centre', 'Details', 'Prescription', 'Confirm'] : [isImaging ? 'Choose centre' : 'Choose lab', 'Details', 'Confirm'];
-  const step = done ? steps.length : !providerId ? 0 : !activeProfile ? 1 : requiresRx && !activeRx ? 2 : steps.length - 1;
+  // Final step is done only once the lab has confirmed the order; until then it stays highlighted as pending.
+  const step = done ? (done.status === 'CONFIRMED' ? steps.length : steps.length - 1) : !providerId ? 0 : !activeProfile ? 1 : requiresRx && !activeRx ? 2 : steps.length - 1;
   const minWhen = new Date(nowMs() + 2 * 3_600_000).toISOString().slice(0, 16);
   const pinOk = /^[1-9][0-9]{5}$/.test(pincode);
 
@@ -88,7 +89,7 @@ function TestInner() {
         {service && (service.fastingRequired || service.preparationInstructions || requiresRx) && (
           <div className="flex items-start gap-3 rounded-3xl bg-warning-soft p-3 text-sm"><Info size={18} className="mt-0.5 shrink-0 text-warning" aria-hidden /><div>{service.fastingRequired && <p className="font-bold">Fasting required — usually 8 to 12 hours. Water is fine.</p>}{service.preparationInstructions && <p className="mt-0.5 text-muted">{service.preparationInstructions}</p>}{requiresRx && <p className="mt-0.5 font-semibold">Needs a doctor&apos;s prescription. You can choose or upload it while booking.</p>}</div></div>
         )}
-        <StepBar steps={steps} current={Math.min(step, steps.length - 1)} />
+        <StepBar steps={steps} current={step} />
 
         {done ? (
           <Card className="animate-scale-in text-center">

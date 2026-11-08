@@ -83,11 +83,12 @@ export function PushRow() {
       setState(next);
       if (next === 'on') toast.success('Notifications on', 'We will tell you about confirmations, reports and order updates.');
       if (next === 'blocked') toast.error(new Error('Notifications are blocked in your browser settings for this site.'));
-      if (next === 'unavailable') toast.error(new Error('Push is not set up on the server yet. In-app notifications still work.'));
+      if (next === 'unavailable') toast.toast({ kind: 'info', title: 'Phone alerts are not switched on yet', description: 'Carevanta is setting them up. Alerts inside the app still work.' });
     } catch (e) { toast.error(e); } finally { setBusy(false); }
   };
-  const copy: Record<PushState | 'loading', string> = { loading: 'Checking…', unsupported: 'Not supported in this browser', blocked: 'Blocked in browser settings', unavailable: 'Not available yet', off: 'Get alerts for confirmations and reports', on: 'On for this device' };
-  const disabled = state === 'loading' || state === 'unsupported' || state === 'blocked';
+  const copy: Record<PushState | 'loading', string> = { loading: 'Checking…', unsupported: 'Not supported in this browser', blocked: 'Blocked in browser settings', unavailable: 'Coming soon. Alerts inside the app still work', off: 'Get alerts for confirmations and reports', on: 'On for this device' };
+  // Nothing to switch when the browser cannot do push or the platform has not set it up yet.
+  const disabled = state === 'loading' || state === 'unsupported' || state === 'blocked' || state === 'unavailable';
   return (
     <button type="button" onClick={() => void toggle()} disabled={disabled || busy} className="card-3d flex w-full items-center gap-3 rounded-3xl p-4 text-left disabled:opacity-70">
       <span className={`flex h-11 w-11 items-center justify-center rounded-2xl ${state === 'on' ? 'bg-success-soft text-success' : 'bg-primary-soft text-primary'}`}>{state === 'on' ? <Bell size={20} /> : <BellOff size={20} />}</span>

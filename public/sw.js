@@ -7,7 +7,7 @@
  *  2. Turn Web Push messages into system notifications and open the right
  *     page when one is tapped.
  */
-const VERSION = 'v1';
+const VERSION = 'v2'; // bumped 2026-11-08: drops code cached by the old cache-everything rule
 const SHELL = `carevanta-patient-${VERSION}`;
 const OFFLINE_URL = '/offline.html';
 
@@ -25,8 +25,13 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(req.url);
   if (url.origin !== self.location.origin) return; // API lives on another origin; never touch it.
   if (url.pathname.startsWith('/_next/static/') || url.pathname.startsWith('/icon-') || url.pathname === '/logo.png') {
-    // Hashed build assets: cache first, fill on miss.
-    event.respondWith(caches.match(req).then((hit) => hit || fetch(req).then((res) => { const copy = res.clone(); caches.open(SHELL).then((c) => c.put(req, copy)); return res; })));
+    // Cache first, but only keep files the server marks immutable (production builds, whose names change
+    // with every release). Development files keep the same name while their content changes, so caching
+    // them served stale code ("module factory is not available").
+    event.respondWith(caches.match(req).then((hit) => hit || fetch(req).then((res) => {
+      if (res.ok && /immutable/.test(res.headers.get('cache-control') ?? '')) { const copy = res.clone(); caches.open(SHELL).then((c) => c.put(req, copy)); }
+      return res;
+    })));
     return;
   }
   if (req.mode === 'navigate') {

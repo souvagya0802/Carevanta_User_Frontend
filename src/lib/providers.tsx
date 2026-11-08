@@ -9,6 +9,7 @@ import { PatientUiProvider } from './patient-ui';
 import { LocationProvider } from './location';
 import { CartProvider } from './cart';
 import { registerServiceWorker } from './push';
+import { PatientAlerts } from '@/components/alerts/alert-center';
 
 export function AppProviders({ children }: { children: ReactNode }) {
   useEffect(() => { void registerServiceWorker(); }, []);
@@ -27,7 +28,11 @@ export function AppProviders({ children }: { children: ReactNode }) {
         <PatientUiProvider>
           <LocationProvider>
             <CartProvider>
-              <AuthProvider>{children}</AuthProvider>
+              <AuthProvider>
+                {children}
+                {/* Pop-ups for confirmations, cancellations, reports and ambulance news (mounted once, not per page). */}
+                <PatientAlerts />
+              </AuthProvider>
             </CartProvider>
           </LocationProvider>
         </PatientUiProvider>
