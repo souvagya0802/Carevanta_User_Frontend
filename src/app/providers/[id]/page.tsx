@@ -43,12 +43,12 @@ export default function ProviderPage() {
 
   return (
     <AppShell hideTop>
-      {q.isPending ? <Skeleton card rows={3} /> : q.isError || !p ? <ErrorState error={q.error} retry={() => q.refetch()} /> : (
+      {q.isPending ? <Skeleton card rows={3} /> : q.isError || !p ? <div className="mx-auto max-w-2xl space-y-4 pt-2"><button type="button" onClick={() => router.back()} aria-label="Back" className="flex h-11 w-11 items-center justify-center rounded-full bg-white shadow-card"><ArrowLeft size={18} /></button><ErrorState error={q.error} retry={() => q.refetch()} /></div> : (
         <div className="space-y-5">
           <section className="relative -mx-4 -mt-3 overflow-hidden px-5 pt-[max(12px,env(safe-area-inset-top))] pb-6 text-white lg:mx-0 lg:mt-0 lg:rounded-[32px] lg:p-8" style={{ background: `linear-gradient(160deg, ${TYPE_COLOUR[p.type] ?? '#1E6CFF'}, #0b1b3a)` }}>
             <span className="orb -top-16 -right-10 h-56 w-56" />
             <div className="relative">
-              <button type="button" onClick={() => router.back()} aria-label="Back" className="mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-white/15 lg:hidden"><ArrowLeft size={18} /></button>
+              <button type="button" onClick={() => router.back()} aria-label="Back" className="mb-4 flex h-11 w-11 items-center justify-center rounded-full bg-white/15 lg:hidden"><ArrowLeft size={18} /></button>
               <div className="flex items-start gap-4">
                 <Avatar name={p.name} size="xl" className="rounded-3xl bg-white/20" />
                 <div className="min-w-0 flex-1">
@@ -66,14 +66,14 @@ export default function ProviderPage() {
             </div>
           </section>
 
-          {p.facility?.hasEmergency && <div className="flex items-center gap-3 rounded-3xl bg-danger-soft p-3 text-sm"><span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-danger text-white"><Phone size={18} aria-hidden /></span><span className="flex-1"><span className="font-extrabold text-danger">Emergency department</span><span className="block text-xs text-muted">{p.facility.isOpen24x7 ? 'Open round the clock.' : 'Check hours before travelling.'} In an emergency call 112 first.</span></span>{p.contactPhone && <a href={`tel:${p.contactPhone}`} className="rounded-full bg-white px-3 py-2 text-xs font-bold text-danger shadow-card">Call</a>}</div>}
+          {p.facility?.hasEmergency && <div className="flex items-center gap-3 rounded-3xl bg-danger-soft p-3 text-sm"><span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-danger text-white"><Phone size={18} aria-hidden /></span><span className="flex-1"><span className="font-extrabold text-danger">Emergency department</span><span className="block text-xs text-muted">{p.facility.isOpen24x7 ? 'Open round the clock.' : 'Check hours before travelling.'} In an emergency call 112 first.</span></span>{p.contactPhone && <a href={`tel:${p.contactPhone}`} className="inline-flex h-11 items-center rounded-full bg-white px-4 text-xs font-bold text-danger shadow-card">Call</a>}</div>}
           {p.description && <Card><p className="text-sm">{p.description}</p></Card>}
 
           {isPharmacy && <Link href={`/pharmacy?provider=${p.id}`}><Button full size="lg"><Pill size={18} /> Order Medicines From Here</Button></Link>}
 
           {p.doctors.length > 0 && (
             <section>
-              <SectionTitle title="Doctors here" />
+              <SectionTitle title="Doctors Here" />
               <div className="stagger grid gap-2 lg:grid-cols-2">
                 {p.doctors.map((d) => (
                   <Card key={d.id} href={`/doctors/${d.id}`} className="flex items-center gap-3">
@@ -88,7 +88,7 @@ export default function ProviderPage() {
 
           {p.services.length > 0 && (
             <section>
-              <SectionTitle title={isLab ? 'Tests and scans' : 'Services and prices'} />
+              <SectionTitle title={isLab ? 'Tests and Scans' : 'Services and prices'} />
               <div className="stagger grid gap-2 lg:grid-cols-2">
                 {p.services.map((s) => (
                   <Card key={s.id} href={isLab || s.category === 'DIAGNOSTIC_TEST' || s.category === 'IMAGING' ? `/tests/${encodeURIComponent(s.code)}?provider=${p.id}` : undefined} className="flex items-center gap-3">
@@ -109,7 +109,7 @@ export default function ProviderPage() {
           )}
 
           <section>
-            <SectionTitle title={p.locations.length > 1 ? 'Locations' : 'Location & hours'} />
+            <SectionTitle title={p.locations.length > 1 ? 'Locations' : 'Location & Hours'} />
             {p.locations.some((l) => l.latitude != null && l.longitude != null) && (
               <MapView className="mb-3 h-56 lg:h-72" you={place} markers={p.locations.flatMap((l) => (l.latitude != null && l.longitude != null ? [{ id: l.id, lat: l.latitude, lng: l.longitude, title: l.name, colour: TYPE_COLOUR[p.type] }] : []))} label={`Map of ${p.name}`} />
             )}
@@ -120,8 +120,8 @@ export default function ProviderPage() {
                   <p className="mt-0.5 text-xs text-muted">{l.addressLine1}{l.addressLine2 ? `, ${l.addressLine2}` : ''}, {l.locality ? `${l.locality}, ` : ''}{l.city}, {l.district} {l.pincode}</p>
                   <ul className="mt-2 grid grid-cols-2 gap-x-4 text-xs">{[1, 2, 3, 4, 5, 6, 0].map((d) => { const hs = l.operatingHours.filter((h) => h.dayOfWeek === d && !h.isClosed); return <li key={d} className="flex justify-between gap-2"><span className={d === today ? 'font-bold text-ink' : 'text-muted'}>{DAYS[d]}</span><span className="tnum">{hs.length ? hs.map((h) => `${hm(h.opensAtMin)}–${hm(h.closesAtMin)}`).join(', ') : 'Closed'}</span></li>; })}</ul>
                   <div className="mt-3 flex gap-2">
-                    {l.latitude != null && l.longitude != null && <a href={directionsUrl(l.latitude, l.longitude)} target="_blank" rel="noreferrer" className="inline-flex h-10 items-center gap-1 rounded-full bg-primary-soft px-3 text-xs font-bold text-primary"><MapPin size={14} aria-hidden /> Directions</a>}
-                    {(l.phone ?? p.contactPhone) && <a href={`tel:${l.phone ?? p.contactPhone}`} className="inline-flex h-10 items-center gap-1 rounded-full bg-soft px-3 text-xs font-bold"><Phone size={14} aria-hidden /> Call</a>}
+                    {l.latitude != null && l.longitude != null && <a href={directionsUrl(l.latitude, l.longitude)} target="_blank" rel="noreferrer" className="inline-flex h-11 items-center gap-1 rounded-full bg-primary-soft px-3 text-xs font-bold text-primary"><MapPin size={14} aria-hidden /> Directions</a>}
+                    {(l.phone ?? p.contactPhone) && <a href={`tel:${l.phone ?? p.contactPhone}`} className="inline-flex h-11 items-center gap-1 rounded-full bg-soft px-3 text-xs font-bold"><Phone size={14} aria-hidden /> Call</a>}
                   </div>
                 </Card>
               ))}
@@ -129,7 +129,7 @@ export default function ProviderPage() {
           </section>
 
           <section>
-            <SectionTitle title="What patients say" />
+            <SectionTitle title="What Patients Say" />
             {reviews.isPending ? <Skeleton rows={2} /> : !reviews.data?.length ? <p className="text-sm text-muted">No published reviews yet.</p> : <div className="stagger grid gap-2 lg:grid-cols-2">{reviews.data.map((r) => <Card key={r.id}><div className="flex items-center justify-between"><Rating value={r.rating} /><span className="text-xs text-muted">{r.author} · {relative(r.createdAt)}</span></div>{r.comment && <p className="mt-1.5 text-sm">{r.comment}</p>}</Card>)}</div>}
           </section>
         </div>

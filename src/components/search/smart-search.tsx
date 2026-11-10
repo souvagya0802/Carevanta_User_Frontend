@@ -66,8 +66,8 @@ export function NoSpecialistsNote({ specialities, nearYou, onGo, className }: { 
       <p className="font-bold">No {specialistsWord(first.name)} are listed {nearYou ? 'near you ' : ''}yet.</p>
       <p className="mt-0.5 text-muted">{isGp ? 'Try a nearby town, or browse every doctor listed.' : 'A General Physician can see you first and refer you if needed.'}</p>
       <div className="mt-2 flex flex-wrap gap-2">
-        {!isGp && <button type="button" onClick={() => onGo('/search?type=doctors&speciality=GENERAL_MEDICINE', 'General Physician')} className="inline-flex h-10 items-center rounded-full bg-white px-4 text-sm font-bold text-primary shadow-card">See a General Physician</button>}
-        <button type="button" onClick={() => onGo('/search?type=doctors', 'All doctors')} className="inline-flex h-10 items-center rounded-full px-3 text-sm font-semibold text-primary">Browse all doctors</button>
+        {!isGp && <button type="button" onClick={() => onGo('/search?type=doctors&speciality=GENERAL_MEDICINE', 'General Physician')} className="inline-flex h-11 items-center rounded-full bg-white px-4 text-sm font-bold text-primary shadow-card">See a General Physician</button>}
+        <button type="button" onClick={() => onGo('/search?type=doctors', 'All doctors')} className="inline-flex h-11 items-center rounded-full px-3 text-sm font-semibold text-primary">Browse All Doctors</button>
       </div>
     </div>
   );
@@ -139,7 +139,7 @@ export function SmartSearch({ initial = '', placeholder, onSearch, tone = 'light
 
   return (
     <div ref={box} className={cx('relative w-full min-w-0', className)}>
-      <form role="search" onSubmit={(e) => { e.preventDefault(); submit(); }} className={cx('flex items-center gap-2 rounded-full bg-white p-1.5 pl-4 text-ink focus-within:ring-4 focus-within:ring-primary/25', tone === 'hero' ? 'shadow-float' : 'shadow-card')}>
+      <form role="search" onSubmit={(e) => { e.preventDefault(); submit(); }} className={cx('flex items-center gap-2 rounded-full bg-white p-1 pl-4 text-ink focus-within:ring-4 focus-within:ring-primary/25', tone === 'hero' ? 'shadow-float' : 'shadow-card')}>
         <Search size={18} className="shrink-0 text-muted" aria-hidden />
         <input
           value={q}
@@ -154,10 +154,10 @@ export function SmartSearch({ initial = '', placeholder, onSearch, tone = 'light
           aria-autocomplete="list"
           autoFocus={autoFocus}
           enterKeyHint="search"
-          className="h-10 min-w-0 flex-1 bg-transparent text-[15px] outline-none placeholder:text-muted/70 focus-visible:outline-none"
+          className="h-11 min-w-0 flex-1 bg-transparent text-[15px] outline-none placeholder:text-muted/70 focus-visible:outline-none"
         />
-        {q && <button type="button" aria-label="Clear search" onClick={() => { setQ(''); setActive(-1); }} className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-muted hover:bg-soft"><X size={16} /></button>}
-        <button type="submit" className="h-10 shrink-0 whitespace-nowrap rounded-full bg-brand px-4 text-sm font-bold text-white shadow-glow">Search</button>
+        {q && <button type="button" aria-label="Clear search" onClick={() => { setQ(''); setActive(-1); }} className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-muted hover:bg-soft"><X size={16} /></button>}
+        <button type="submit" className="h-11 shrink-0 whitespace-nowrap rounded-full bg-brand px-4 text-sm font-bold text-white shadow-glow">Search</button>
       </form>
 
       {open && (
@@ -167,11 +167,11 @@ export function SmartSearch({ initial = '', placeholder, onSearch, tone = 'light
               {recent.length > 0 && (
                 <>
                   <p className="mb-1.5 flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide text-muted"><History size={13} /> Recent</p>
-                  <div className="mb-3 flex flex-wrap gap-1.5">{recent.map((r) => <button key={r} type="button" onClick={() => { setQ(r); submit(r); }} className="min-h-10 rounded-full bg-soft px-3.5 text-sm font-semibold">{r}</button>)}</div>
+                  <div className="mb-3 flex flex-wrap gap-1.5">{recent.map((r) => <button key={r} type="button" onClick={() => { setQ(r); submit(r); }} className="min-h-11 rounded-full bg-soft px-3.5 text-sm font-semibold">{r}</button>)}</div>
                 </>
               )}
               <p className="mb-1.5 flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide text-muted"><Sparkles size={13} /> Popular</p>
-              <div className="flex flex-wrap gap-1.5">{(ui.popularSearches ?? []).map((r) => <button key={r} type="button" onClick={() => { setQ(r); submit(r); }} className="min-h-10 rounded-full bg-primary-soft px-3.5 text-sm font-semibold text-primary">{r}</button>)}</div>
+              <div className="flex flex-wrap gap-1.5">{(ui.popularSearches ?? []).map((r) => <button key={r} type="button" onClick={() => { setQ(r); submit(r); }} className="min-h-11 rounded-full bg-primary-soft px-3.5 text-sm font-semibold text-primary">{r}</button>)}</div>
               <p className="mt-3 text-xs text-muted">Type how you would say it: “bukhar”, “pet dard”, “child doctor”, a doctor’s name or a medicine.</p>
             </div>
           ) : !d ? (
@@ -260,5 +260,5 @@ function Row({ icon, title, sub, onClick, active }: { icon: ReactNode; title: st
 
 /** Small link list for showing the same matches inline (used on the results page). */
 export function MatchLinks({ items }: { items: { href: string; label: string }[] }) {
-  return <div className="no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4">{items.map((i) => <Link key={i.href} href={i.href} className="inline-flex min-h-10 shrink-0 items-center rounded-full bg-white px-3.5 text-sm font-semibold shadow-card">{i.label}</Link>)}</div>;
+  return <div className="no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4">{items.map((i) => <Link key={i.href} href={i.href} className="inline-flex min-h-11 shrink-0 items-center rounded-full bg-white px-3.5 text-sm font-semibold shadow-card">{i.label}</Link>)}</div>;
 }

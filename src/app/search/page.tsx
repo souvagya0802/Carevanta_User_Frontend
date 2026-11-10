@@ -89,14 +89,14 @@ function SearchInner() {
 
   return (
     <AppShell>
-      <PageTitle title="Find care" subtitle={place ? `Near ${place.label}, within ${radius} km` : 'Set your location to see distance and what is nearby'} right={<Button size="sm" variant="secondary" onClick={() => setFilters(true)}><SlidersHorizontal size={16} /> Filters</Button>} />
+      <PageTitle title="Find Care" subtitle={place ? `Near ${place.label}, within ${radius} km` : 'Set your location to see distance and what is nearby'} right={<Button size="sm" variant="secondary" onClick={() => setFilters(true)}><SlidersHorizontal size={16} /> Filters</Button>} />
       <SmartSearch key={q} initial={q} onSearch={(text) => setParams({ q: text, speciality: null, type: null })} />
-      <div className="no-scrollbar -mx-4 mt-3 flex gap-2 overflow-x-auto px-4">{KINDS.map((k) => <Chip key={k.key} active={kind === k.key} onClick={() => setParams({ type: k.key, speciality: null })}>{k.label}</Chip>)}</div>
+      <div className="no-scrollbar -mx-4 mt-3 flex gap-2 overflow-x-auto px-4 lg:mx-0 lg:flex-wrap lg:overflow-visible lg:px-0">{KINDS.map((k) => <Chip key={k.key} active={kind === k.key} onClick={() => setParams({ type: k.key, speciality: null })}>{k.label}</Chip>)}</div>
 
       {u?.emergency && (
         <div role="alert" className="mt-4 flex items-start gap-3 rounded-3xl bg-danger p-4 text-white shadow-[0_20px_40px_-20px_rgb(225_29_72/0.7)]">
           <AlertTriangle size={22} className="mt-0.5 shrink-0" aria-hidden />
-          <div><p className="font-extrabold">This can be an emergency</p><p className="mt-0.5 text-sm text-white/90">{u.emergency.message}</p><a href={`tel:${u.emergency.number}`} className="mt-3 inline-flex h-10 items-center rounded-full bg-white px-4 text-sm font-bold text-danger">Call {u.emergency.number}</a></div>
+          <div><p className="font-extrabold">This can be an emergency</p><p className="mt-0.5 text-sm text-white/90">{u.emergency.message}</p><a href={`tel:${u.emergency.number}`} className="mt-3 inline-flex h-11 items-center rounded-full bg-white px-4 text-sm font-bold text-danger">Call {u.emergency.number}</a></div>
         </div>
       )}
 
@@ -109,7 +109,7 @@ function SearchInner() {
             {kind === 'doctors' && liveSpecs.length === 1 && !specialityParam && <span className="text-muted">· {liveSpecs[0]!.name}</span>}
           </p>
           {kind === 'doctors' && liveSpecs.length > 1 && (
-            <div className="no-scrollbar -mx-3 mt-2 flex gap-2 overflow-x-auto px-3">
+            <div className="no-scrollbar -mx-3 mt-2 flex gap-2 overflow-x-auto px-3 lg:mx-0 lg:flex-wrap lg:overflow-visible lg:px-0">
               <Chip active={!specialityParam} onClick={() => setParams({ speciality: null })}>All {liveSpecs.length}</Chip>
               {liveSpecs.map((s) => <Chip key={s.code} active={specialityParam === s.code} onClick={() => setParams({ speciality: s.code })}>{s.name} <span className="text-[11px] opacity-70">{s.doctors}</span></Chip>)}
             </div>
@@ -121,26 +121,26 @@ function SearchInner() {
 
       {/* Tests and medicines that match the words, whichever tab is open. */}
       {u && (u.tests.length > 0 || u.medicines.length > 0) && kind !== 'labs' && (
-        <div className="no-scrollbar -mx-4 mt-3 flex gap-2 overflow-x-auto px-4">
+        <div className="no-scrollbar -mx-4 mt-3 flex gap-2 overflow-x-auto px-4 lg:mx-0 lg:flex-wrap lg:overflow-visible lg:px-0">
           {u.tests.slice(0, 4).map((t) => <Link key={t.code} href={`/tests/${t.code}`} className="flex shrink-0 items-center gap-2 rounded-2xl bg-white px-3 py-2 text-sm shadow-card"><FlaskConical size={15} className="text-violet" /><span className="font-semibold">{t.name}</span>{t.fromMinor != null && <span className="text-xs text-muted">from {money(t.fromMinor)}</span>}</Link>)}
           {u.medicines.slice(0, 4).map((m) => <Link key={m.id} href={`/pharmacy?q=${encodeURIComponent(m.name)}`} className="flex shrink-0 items-center gap-2 rounded-2xl bg-white px-3 py-2 text-sm shadow-card"><Pill size={15} className="text-warning" /><span className="font-semibold">{medicineLabel(m.name, m.strength)}</span>{m.fromMinor != null && <span className="text-xs text-muted">from {money(m.fromMinor)}</span>}</Link>)}
         </div>
       )}
 
       {kind === 'doctors' && !u?.specialities.length && specs.data && (
-        <div className="no-scrollbar -mx-4 mt-2 flex gap-2 overflow-x-auto px-4">
-          <Chip active={!specialityParam} onClick={() => setParams({ speciality: null })}>All specialities</Chip>
+        <div className="no-scrollbar -mx-4 mt-2 flex gap-2 overflow-x-auto px-4 lg:mx-0 lg:flex-wrap lg:overflow-visible lg:px-0">
+          <Chip active={!specialityParam} onClick={() => setParams({ speciality: null })}>All Specialities</Chip>
           {specs.data.filter((s) => s.doctors > 0).map((s) => <Chip key={s.code} active={specialityParam === s.code} onClick={() => setParams({ speciality: specialityParam === s.code ? null : s.code })}>{s.name} <span className="text-[11px] opacity-70">{s.doctors}</span></Chip>)}
         </div>
       )}
-      {!place && <button type="button" onClick={() => void locate()} className="mt-3 flex w-full items-center gap-3 rounded-2xl bg-primary-soft p-3 text-left text-sm"><MapPin size={18} className="shrink-0 text-primary" aria-hidden /><span className="min-w-0 flex-1"><span className="font-bold">Use my location</span><span className="block text-xs text-muted">See how far each option is and sort by distance.</span></span><span className="text-xs font-bold text-primary">{asking ? 'Finding…' : 'Allow'}</span></button>}
+      {!place && <button type="button" onClick={() => void locate()} className="mt-3 flex w-full items-center gap-3 rounded-2xl bg-primary-soft p-3 text-left text-sm"><MapPin size={18} className="shrink-0 text-primary" aria-hidden /><span className="min-w-0 flex-1"><span className="font-bold">Use My Location</span><span className="block text-xs text-muted">See how far each option is and sort by distance.</span></span><span className="text-xs font-bold text-primary">{asking ? 'Finding…' : 'Allow'}</span></button>}
 
       {onMap.length > 0 && (
         <div className="mt-4 flex items-center justify-between gap-2">
           <p className="text-xs font-semibold text-muted">{items.length} {items.length === 1 ? 'result' : 'results'}</p>
           <div role="group" aria-label="Show results as" className="flex rounded-full bg-white p-1 shadow-card">
-            <button type="button" aria-pressed={view === 'list'} onClick={() => setView('list')} className={`flex h-10 items-center gap-1.5 rounded-full px-4 text-sm font-bold ${view === 'list' ? 'bg-primary text-white' : 'text-muted'}`}><List size={15} aria-hidden /> List</button>
-            <button type="button" aria-pressed={view === 'map'} onClick={() => setView('map')} className={`flex h-10 items-center gap-1.5 rounded-full px-4 text-sm font-bold ${view === 'map' ? 'bg-primary text-white' : 'text-muted'}`}><MapIcon size={15} aria-hidden /> Map</button>
+            <button type="button" aria-pressed={view === 'list'} onClick={() => setView('list')} className={`flex h-11 items-center gap-1.5 rounded-full px-4 text-sm font-bold ${view === 'list' ? 'bg-primary text-white' : 'text-muted'}`}><List size={15} aria-hidden /> List</button>
+            <button type="button" aria-pressed={view === 'map'} onClick={() => setView('map')} className={`flex h-11 items-center gap-1.5 rounded-full px-4 text-sm font-bold ${view === 'map' ? 'bg-primary text-white' : 'text-muted'}`}><MapIcon size={15} aria-hidden /> Map</button>
           </div>
         </div>
       )}
@@ -153,17 +153,17 @@ function SearchInner() {
           </div>
         ) : waiting || results.isPending ? <Skeleton card rows={4} /> : results.isError ? <ErrorState error={results.error} retry={() => results.refetch()} /> : items.length === 0 ? (
           <EmptyState icon={Search} title={place ? `Nothing within ${radius} km` : 'No matches yet'} description={q ? `Nothing listed for “${q}” here yet. Try another tab, a simpler word, or widen the distance.` : place ? 'Widen the distance in Filters, or try another speciality.' : 'Try a different word, or browse by speciality above.'}
-            action={q ? <Button variant="soft" onClick={() => setParams({ q: null, speciality: null })}><X size={14} /> Clear search</Button> : place ? <Button variant="soft" onClick={() => setRadius(Math.min(200, radius * 2))}>Search within {Math.min(200, radius * 2)} km</Button> : undefined} />
+            action={q ? <Button variant="soft" onClick={() => setParams({ q: null, speciality: null })}><X size={14} /> Clear Search</Button> : place ? <Button variant="soft" onClick={() => setRadius(Math.min(200, radius * 2))}>Search Within {Math.min(200, radius * 2)} km</Button> : undefined} />
         ) : (
           <div className="stagger grid grid-cols-1 gap-3 lg:grid-cols-2">{items.map((p) => <ProviderCard key={p.id} p={p} priceLabel={kind === 'labs' && testCode ? 'from' : undefined} />)}</div>
         )}
       </div>
       <p className="mt-6 text-center text-xs text-muted">{u?.disclaimer ?? 'Only verified providers are shown.'} Fees are what the provider published.</p>
 
-      <Sheet open={filters} onClose={() => setFilters(false)} title="Filters" footer={<Button full onClick={() => setFilters(false)}>Show results</Button>}>
+      <Sheet open={filters} onClose={() => setFilters(false)} title="Filters" footer={<Button full onClick={() => setFilters(false)}>Show Results</Button>}>
         <div className="space-y-4">
-          <label className="block"><span className="mb-1.5 block text-sm font-semibold">Sort by</span><Select value={sort} onChange={(e) => setSort(e.target.value as typeof sort)}><option value="distance" disabled={!place}>Nearest first</option><option value="rating">Best rated</option><option value="fee">Lowest fee</option></Select></label>
-          <label className="block"><span className="mb-1.5 block text-sm font-semibold">Distance: within {radius} km</span><input type="range" min={2} max={100} step={1} value={radius} onChange={(e) => setRadius(Number(e.target.value))} className="w-full accent-primary" disabled={!place} /><span className="text-xs text-muted">{place ? 'From your saved location.' : 'Set a location first.'}</span></label>
+          <label className="block"><span className="mb-1.5 block text-sm font-semibold">Sort By</span><Select value={sort} onChange={(e) => setSort(e.target.value as typeof sort)}><option value="distance" disabled={!place}>Nearest first</option><option value="rating">Best rated</option><option value="fee">Lowest fee</option></Select></label>
+          <label className="block"><span className="mb-1.5 block text-sm font-semibold">Distance: Within {radius} km</span><input type="range" min={2} max={100} step={1} value={radius} onChange={(e) => setRadius(Number(e.target.value))} className="w-full accent-primary" disabled={!place} /><span className="text-xs text-muted">{place ? 'From your saved location.' : 'Set a location first.'}</span></label>
           {kind === 'doctors' && specs.data && <label className="block"><span className="mb-1.5 block text-sm font-semibold">Speciality</span><Select value={specialityParam} onChange={(e) => setParams({ speciality: e.target.value || null })}><option value="">Any</option>{specs.data.map((s) => <option key={s.code} value={s.code}>{s.name} ({s.doctors})</option>)}</Select></label>}
         </div>
       </Sheet>

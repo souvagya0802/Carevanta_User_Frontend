@@ -23,14 +23,14 @@ export default function RecordsPage() {
   return (
     <AppShell>
       <RequireSignIn message="Reports and prescriptions are private to your account.">
-        <PageTitle title="Health records" subtitle="Lab reports and prescriptions for everyone in your family, in one place." right={<div className="flex gap-2"><Chip active={tab === 'reports'} onClick={() => setTab('reports')}>Reports</Chip><Chip active={tab === 'prescriptions'} onClick={() => setTab('prescriptions')}>Prescriptions</Chip></div>} />
+        <PageTitle title="Health Records" subtitle="Lab reports and prescriptions for everyone in your family, in one place." right={<div className="flex gap-2"><Chip active={tab === 'reports'} onClick={() => setTab('reports')}>Reports</Chip><Chip active={tab === 'prescriptions'} onClick={() => setTab('prescriptions')}>Prescriptions</Chip></div>} />
         {tab === 'reports' ? (
-          labs.isPending ? <Skeleton card rows={3} /> : labs.isError ? <ErrorState error={labs.error} retry={() => labs.refetch()} /> : withReports.length === 0 ? <EmptyState icon={FlaskConical} title="No reports yet" description="When a lab publishes a report for a test you booked, it appears here." action={<Link href="/tests" className="text-sm font-bold text-primary">Book a test</Link>} /> : (
+          labs.isPending ? <Skeleton card rows={3} /> : labs.isError ? <ErrorState error={labs.error} retry={() => labs.refetch()} /> : withReports.length === 0 ? <EmptyState icon={FlaskConical} title="No reports yet" description="When a lab publishes a report for a test you booked, it appears here." action={<Link href="/tests" className="text-sm font-bold text-primary">Book a Test</Link>} /> : (
             <div className="stagger grid gap-2 lg:grid-cols-2">{withReports.map((o) => <Card key={o.id} href={`/orders/lab/${o.id}`} className="flex items-center gap-3"><span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-violet-soft text-violet"><FileText size={22} /></span><span className="min-w-0 flex-1"><span className="block truncate text-sm font-extrabold">{o.items.map((i) => i.serviceName).join(', ')}</span><span className="block truncate text-xs text-muted">{o.patient.fullName} · {o.provider.displayName} · {date(o.reports[o.reports.length - 1]?.publishedAt ?? o.createdAt)}</span></span><Badge tone="success">{o.reports.length > 1 ? `${o.reports.length} versions` : 'Report'}</Badge></Card>)}</div>
           )
         ) : (
           <>
-            <div className="mb-3 flex justify-end"><Button size="sm" onClick={() => setUploading(true)}><Upload size={14} /> Upload prescription</Button></div>
+            <div className="mb-3 flex justify-end"><Button size="sm" onClick={() => setUploading(true)}><Upload size={14} /> Upload Prescription</Button></div>
             {rx.isPending ? <Skeleton card rows={3} /> : rx.isError ? <ErrorState error={rx.error} retry={() => rx.refetch()} /> : !rx.data?.length ? <EmptyState icon={FileText} title="No prescriptions uploaded" description="Upload a photo or PDF once and reuse it when ordering medicines." action={<Button size="sm" onClick={() => setUploading(true)}>Upload</Button>} /> : (
               <div className="stagger grid gap-2 lg:grid-cols-2">{rx.data.map((p) => <PrescriptionRow key={p.id} rx={p} />)}</div>
             )}

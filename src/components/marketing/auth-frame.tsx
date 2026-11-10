@@ -16,7 +16,7 @@ export function AuthFrame({ title, subtitle, children, footer }: { title: string
         <span className="orb -top-24 -right-20 h-72 w-72" /><span className="orb -bottom-24 left-1/4 h-72 w-72 opacity-60" />
         <div className="relative flex items-center justify-between">
           <Link href="/" className="flex items-center gap-2.5"><Logo size="sm" onDark className="rounded-xl" /><span className="text-lg font-extrabold tracking-tight">{branding.name}</span></Link>
-          <Link href="/" className="inline-flex h-10 items-center gap-1 rounded-full bg-white/15 px-4 text-sm font-semibold"><ArrowLeft size={16} aria-hidden /> Back</Link>
+          <Link href="/" className="inline-flex h-11 items-center gap-1 rounded-full bg-white/15 px-4 text-sm font-semibold"><ArrowLeft size={16} aria-hidden /> Back</Link>
         </div>
         <div className="relative mt-8 lg:mt-0">
           <h1 className="text-2xl font-extrabold leading-tight tracking-tight lg:text-4xl">{ui.landing.headline}</h1>

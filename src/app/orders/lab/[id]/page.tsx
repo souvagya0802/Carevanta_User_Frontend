@@ -41,7 +41,7 @@ export default function LabOrderPage() {
     <AppShell hideTop>
       <RequireSignIn>
         <div className="mx-auto max-w-2xl space-y-4">
-          <div className="flex items-center gap-3"><button type="button" onClick={() => router.back()} aria-label="Back" className="flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-card"><ArrowLeft size={18} /></button><h1 className="text-xl font-extrabold">Test order</h1></div>
+          <div className="flex items-center gap-3"><button type="button" onClick={() => router.back()} aria-label="Back" className="flex h-11 w-11 items-center justify-center rounded-full bg-white shadow-card"><ArrowLeft size={18} /></button><h1 className="text-xl font-extrabold">Test Order</h1></div>
           {q.isPending ? <Skeleton card rows={3} /> : q.isError || !o ? <ErrorState error={q.error} retry={() => q.refetch()} /> : (
             <>
               <Card>
@@ -57,7 +57,7 @@ export default function LabOrderPage() {
                   <div className="mt-3">
                     <p className="text-xs text-muted">{[o.location.name, o.location.addressLine1, o.location.city, o.location.pincode].filter(Boolean).join(', ')}</p>
                     <MapView className="mt-2 h-40" markers={[{ id: 'centre', lat: o.location.latitude, lng: o.location.longitude, title: o.location.name, colour: '#7C3AED' }]} label={`Map to ${o.location.name}`} />
-                    <a href={directionsUrl(o.location.latitude, o.location.longitude)} target="_blank" rel="noreferrer" className="mt-2 inline-flex h-10 items-center gap-1.5 rounded-full bg-primary px-4 text-sm font-bold text-white"><Navigation size={15} aria-hidden /> Directions</a>
+                    <a href={directionsUrl(o.location.latitude, o.location.longitude)} target="_blank" rel="noreferrer" className="mt-2 inline-flex h-11 items-center gap-1.5 rounded-full bg-primary px-4 text-sm font-bold text-white"><Navigation size={15} aria-hidden /> Directions</a>
                   </div>
                 )}
                 {o.transaction && <p className="mt-2 text-xs text-muted">Payment: <Badge tone={o.transaction.status === 'PAID' ? 'success' : 'warning'}>{statusLabel(o.transaction.status)}</Badge></p>}

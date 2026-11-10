@@ -28,7 +28,7 @@ export default function MedicineOrderPage() {
     <AppShell hideTop>
       <RequireSignIn>
         <div className="mx-auto max-w-2xl space-y-4">
-          <div className="flex items-center gap-3"><button type="button" onClick={() => router.back()} aria-label="Back" className="flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-card"><ArrowLeft size={18} /></button><h1 className="text-xl font-extrabold">Medicine order</h1></div>
+          <div className="flex items-center gap-3"><button type="button" onClick={() => router.back()} aria-label="Back" className="flex h-11 w-11 items-center justify-center rounded-full bg-white shadow-card"><ArrowLeft size={18} /></button><h1 className="text-xl font-extrabold">Medicine Order</h1></div>
           {q.isPending ? <Skeleton card rows={3} /> : q.isError || !o ? <ErrorState error={q.error} retry={() => q.refetch()} /> : (
             <>
               <Card>
@@ -43,14 +43,14 @@ export default function MedicineOrderPage() {
                 {o.transaction && <p className="mt-2 text-xs text-muted">Payment: <Badge tone={o.transaction.status === 'PAID' ? 'success' : 'warning'}>{statusLabel(o.transaction.status)}</Badge></p>}
               </Card>
               <div className="flex flex-wrap gap-2">
-                <a href={`/providers/${o.provider.id}`} className="inline-flex h-10 items-center gap-2 rounded-full bg-white px-4 text-sm font-semibold shadow-card"><MapPin size={14} /> Store details</a>
-                {['PLACED', 'PRESCRIPTION_REVIEW', 'ACCEPTED'].includes(o.status) && <Button variant="ghost" className="text-danger" onClick={() => setCancelling(true)}>Cancel order</Button>}
+                <a href={`/providers/${o.provider.id}`} className="inline-flex h-11 items-center gap-2 rounded-full bg-white px-4 text-sm font-semibold shadow-card"><MapPin size={14} /> Store details</a>
+                {['PLACED', 'PRESCRIPTION_REVIEW', 'ACCEPTED'].includes(o.status) && <Button variant="ghost" className="text-danger" onClick={() => setCancelling(true)}>Cancel Order</Button>}
               </div>
               <p className="flex items-center gap-1 text-xs text-muted"><Pill size={12} /> Prices never exceed MRP. Schedule H and H1 medicines are dispensed only against a pharmacist-approved prescription.</p>
             </>
           )}
         </div>
-        <Sheet open={cancelling} onClose={() => setCancelling(false)} title="Cancel this order?" description="Reserved stock goes back to the pharmacy. Any payment is refunded." footer={<><Button variant="secondary" onClick={() => setCancelling(false)}>Keep order</Button><Button variant="danger" onClick={() => cancel.mutate()} loading={cancel.isPending}>Cancel order</Button></>}>
+        <Sheet open={cancelling} onClose={() => setCancelling(false)} title="Cancel This Order?" description="Reserved stock goes back to the pharmacy. Any payment is refunded." footer={<><Button variant="secondary" onClick={() => setCancelling(false)}>Keep Order</Button><Button variant="danger" onClick={() => cancel.mutate()} loading={cancel.isPending}>Cancel Order</Button></>}>
           <Textarea aria-label="Reason for cancelling (optional)" placeholder="Reason (optional)" value={reason} onChange={(e) => setReason(e.target.value)} />
         </Sheet>
       </RequireSignIn>

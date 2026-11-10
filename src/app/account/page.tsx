@@ -34,24 +34,24 @@ export default function AccountPage() {
             <span className="min-w-0 flex-1"><span className="block truncate text-lg font-extrabold">{me.fullName}</span><span className="tnum block truncate text-sm text-muted">{me.phone ? phone(me.phone) : me.email}</span>{me.email && me.phone && <span className="block truncate text-xs text-muted">{me.email}</span>}</span>
             {isVerified(me)
               ? <span className="flex shrink-0 items-center gap-1 rounded-full bg-success-soft px-2.5 py-1 text-xs font-bold text-success"><ShieldCheck size={12} aria-hidden /> Verified</span>
-              : <Link href="/verify?next=/account" className="flex h-10 shrink-0 items-center gap-1 rounded-full bg-warning-soft px-3 text-xs font-bold text-warning"><ShieldAlert size={14} aria-hidden /> Verify Now</Link>}
+              : <Link href="/verify?next=/account" className="flex h-11 shrink-0 items-center gap-1 rounded-full bg-warning-soft px-3 text-xs font-bold text-warning"><ShieldAlert size={14} aria-hidden /> Verify Now</Link>}
           </Card>
         )}
 
         <div className="stagger mt-4 grid gap-2 lg:grid-cols-2">
-          <Row href="/family" icon={Users} title="Family profiles" text="People you book for" />
-          <Row href="/records" icon={FileText} title="Health records" text="Reports and prescriptions" />
+          <Row href="/family" icon={Users} title="Family Profiles" text="People you book for" />
+          <Row href="/records" icon={FileText} title="Health Records" text="Reports and prescriptions" />
           <PushRow />
           <InstallRow />
-          <button type="button" onClick={() => setChanging(true)} className="card-3d flex w-full items-center gap-3 rounded-3xl p-4 text-left"><span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary-soft text-primary"><KeyRound size={20} /></span><span className="min-w-0 flex-1"><span className="block text-sm font-extrabold">Change password</span><span className="block text-xs text-muted">At least 12 characters</span></span><ChevronRight size={16} className="text-muted" /></button>
+          <button type="button" onClick={() => setChanging(true)} className="card-3d flex w-full items-center gap-3 rounded-3xl p-4 text-left"><span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary-soft text-primary"><KeyRound size={20} /></span><span className="min-w-0 flex-1"><span className="block text-sm font-extrabold">Change Password</span><span className="block text-xs text-muted">At least 12 characters</span></span><ChevronRight size={16} className="text-muted" /></button>
         </div>
 
         <Card className="mt-4">
-          <p className="flex items-center gap-2 text-sm font-extrabold"><HelpCircle size={16} className="text-primary" /> Help and support</p>
+          <p className="flex items-center gap-2 text-sm font-extrabold"><HelpCircle size={16} className="text-primary" /> Help and Support</p>
           <div className="mt-3 flex flex-wrap gap-2">
-            {ui.support.phone && <a href={`tel:${ui.support.phone}`} className="inline-flex h-10 items-center gap-2 rounded-full bg-soft px-4 text-sm font-semibold"><Phone size={14} /> Call us</a>}
-            {ui.support.whatsapp && <a href={`https://wa.me/${ui.support.whatsapp.replace(/\D/g, '')}`} target="_blank" rel="noreferrer" className="inline-flex h-10 items-center gap-2 rounded-full bg-soft px-4 text-sm font-semibold"><MessageCircle size={14} /> WhatsApp</a>}
-            {ui.support.email && <a href={`mailto:${ui.support.email}`} className="inline-flex h-10 items-center gap-2 rounded-full bg-soft px-4 text-sm font-semibold"><Mail size={14} /> Email</a>}
+            {ui.support.phone && <a href={`tel:${ui.support.phone}`} className="inline-flex h-11 items-center gap-2 rounded-full bg-soft px-4 text-sm font-semibold"><Phone size={14} /> Call us</a>}
+            {ui.support.whatsapp && <a href={`https://wa.me/${ui.support.whatsapp.replace(/\D/g, '')}`} target="_blank" rel="noreferrer" className="inline-flex h-11 items-center gap-2 rounded-full bg-soft px-4 text-sm font-semibold"><MessageCircle size={14} /> WhatsApp</a>}
+            {ui.support.email && <a href={`mailto:${ui.support.email}`} className="inline-flex h-11 items-center gap-2 rounded-full bg-soft px-4 text-sm font-semibold"><Mail size={14} /> Email</a>}
             {!ui.support.phone && !ui.support.whatsapp && !ui.support.email && <p className="text-sm text-muted">Support contacts will appear here once set up.</p>}
           </div>
           {ui.support.hours && <p className="mt-2 text-xs text-muted">{ui.support.hours}</p>}
@@ -59,7 +59,7 @@ export default function AccountPage() {
         </Card>
 
         {portalUrl && <p className="mt-4 text-center text-xs text-muted">Are you a doctor, hospital, lab, pharmacy or ambulance operator? <a href={portalUrl} className="font-bold text-primary">Open the provider portal</a></p>}
-        <div className="mt-4"><Button variant="ghost" full className="text-danger" onClick={() => signOut.mutate()} loading={signOut.isPending}><LogOut size={16} /> Sign out</Button></div>
+        <div className="mt-4"><Button variant="ghost" full className="text-danger" onClick={() => signOut.mutate()} loading={signOut.isPending}><LogOut size={16} /> Sign Out</Button></div>
         <ChangePasswordSheet open={changing} onClose={() => setChanging(false)} />
       </RequireSignIn>
     </AppShell>
@@ -92,7 +92,7 @@ export function PushRow() {
   return (
     <button type="button" onClick={() => void toggle()} disabled={disabled || busy} className="card-3d flex w-full items-center gap-3 rounded-3xl p-4 text-left disabled:opacity-70">
       <span className={`flex h-11 w-11 items-center justify-center rounded-2xl ${state === 'on' ? 'bg-success-soft text-success' : 'bg-primary-soft text-primary'}`}>{state === 'on' ? <Bell size={20} /> : <BellOff size={20} />}</span>
-      <span className="min-w-0 flex-1"><span className="block text-sm font-extrabold">Push notifications</span><span className="block text-xs text-muted">{copy[state]}</span></span>
+      <span className="min-w-0 flex-1"><span className="block text-sm font-extrabold">Push Notifications</span><span className="block text-xs text-muted">{copy[state]}</span></span>
       <span className={`relative h-7 w-12 rounded-full transition ${state === 'on' ? 'bg-success' : 'bg-line'}`} aria-hidden><span className={`absolute top-0.5 h-6 w-6 rounded-full bg-white shadow transition ${state === 'on' ? 'left-[22px]' : 'left-0.5'}`} /></span>
     </button>
   );
@@ -114,8 +114,8 @@ export function InstallRow() {
   const install = async () => { if (!prompt) return setShowHelp(true); await prompt.prompt(); const { outcome } = await prompt.userChoice; if (outcome === 'accepted') setInstalled(true); setPrompt(null); };
   return (
     <>
-      <button type="button" onClick={() => void install()} className="card-3d flex w-full items-center gap-3 rounded-3xl p-4 text-left"><span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-success-soft text-success"><Download size={20} /></span><span className="min-w-0 flex-1"><span className="block text-sm font-extrabold">Install the app</span><span className="block text-xs text-muted">Add Carevanta to your home screen. Works offline for your bookings.</span></span><ChevronRight size={16} className="text-muted" /></button>
-      <Sheet open={showHelp} onClose={() => setShowHelp(false)} title="Add to home screen">
+      <button type="button" onClick={() => void install()} className="card-3d flex w-full items-center gap-3 rounded-3xl p-4 text-left"><span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-success-soft text-success"><Download size={20} /></span><span className="min-w-0 flex-1"><span className="block text-sm font-extrabold">Install the App</span><span className="block text-xs text-muted">Add Carevanta to your home screen. Works offline for your bookings.</span></span><ChevronRight size={16} className="text-muted" /></button>
+      <Sheet open={showHelp} onClose={() => setShowHelp(false)} title="Add to Home Screen">
         <ol className="list-decimal space-y-2 pl-5 text-sm">
           <li>On iPhone: tap the <Share2 size={14} className="inline" /> Share button in Safari, then <b>Add to Home Screen</b>.</li>
           <li>On Android: open the browser menu (⋮) and tap <b>Install app</b> or <b>Add to Home screen</b>.</li>
@@ -132,11 +132,11 @@ function ChangePasswordSheet({ open, onClose }: { open: boolean; onClose: () => 
   const ok = f.current.length > 0 && problems.length === 0 && f.next === f.again;
   const change = useAction(() => api.post('/auth/password/change', { currentPassword: f.current, newPassword: f.next }), { success: 'Password changed', onSuccess: () => { setF({ current: '', next: '', again: '' }); onClose(); } });
   return (
-    <Sheet open={open} onClose={onClose} title="Change password" footer={<Button full onClick={() => change.mutate()} loading={change.isPending} disabled={!ok}>Update password</Button>}>
+    <Sheet open={open} onClose={onClose} title="Change Password" footer={<Button full onClick={() => change.mutate()} loading={change.isPending} disabled={!ok}>Update Password</Button>}>
       <form className="grid gap-3" onSubmit={(e) => { e.preventDefault(); if (ok) change.mutate(); }}>
-        <Field label="Current password"><PasswordInput autoComplete="current-password" value={f.current} onChange={(e) => setF({ ...f, current: e.target.value })} /></Field>
-        <Field label="New password" hint={f.next && problems.length ? `Needs ${problems.join(', ')}` : 'At least 12 characters with upper, lower case and a number'}><PasswordInput autoComplete="new-password" value={f.next} onChange={(e) => setF({ ...f, next: e.target.value })} /></Field>
-        <Field label="Repeat new password" error={f.again && f.again !== f.next ? 'Passwords do not match' : undefined}><PasswordInput autoComplete="new-password" value={f.again} onChange={(e) => setF({ ...f, again: e.target.value })} /></Field>
+        <Field label="Current Password"><PasswordInput autoComplete="current-password" value={f.current} onChange={(e) => setF({ ...f, current: e.target.value })} /></Field>
+        <Field label="New Password" hint={f.next && problems.length ? `Needs ${problems.join(', ')}` : 'At least 12 characters with upper, lower case and a number'}><PasswordInput autoComplete="new-password" value={f.next} onChange={(e) => setF({ ...f, next: e.target.value })} /></Field>
+        <Field label="Repeat New Password" error={f.again && f.again !== f.next ? 'Passwords do not match' : undefined}><PasswordInput autoComplete="new-password" value={f.again} onChange={(e) => setF({ ...f, again: e.target.value })} /></Field>
       </form>
     </Sheet>
   );

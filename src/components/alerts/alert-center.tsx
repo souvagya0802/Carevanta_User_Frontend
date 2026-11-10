@@ -35,10 +35,10 @@ function lookOf(a: LiveAlert): Look {
 /** Words for the main button, from where the message leads. */
 function actionLabel(link: string | null): string {
   if (!link) return 'OK';
-  if (link.startsWith('/appointments')) return 'View appointment';
-  if (link.startsWith('/orders/medicine')) return 'Track order';
-  if (link.startsWith('/orders')) return 'View order';
-  if (link.startsWith('/emergency')) return 'Track ambulance';
+  if (link.startsWith('/appointments')) return 'View Appointment';
+  if (link.startsWith('/orders/medicine')) return 'Track Order';
+  if (link.startsWith('/orders')) return 'View Order';
+  if (link.startsWith('/emergency')) return 'Track Ambulance';
   return 'Open';
 }
 
@@ -88,7 +88,7 @@ function AlertCenter() {
   const open = (a: LiveAlert) => { void liveAlerts.dismiss(a.id); if (a.link) router.push(a.link); };
 
   const soundToggle = (dark: boolean) => (
-    <button type="button" onClick={() => liveAlerts.setMuted(!muted)} aria-label={muted ? 'Turn alert sound on' : 'Turn alert sound off'} className={cx('flex h-10 w-10 items-center justify-center rounded-full', dark ? 'bg-white/20 text-white' : 'bg-soft text-muted')}>
+    <button type="button" onClick={() => liveAlerts.setMuted(!muted)} aria-label={muted ? 'Turn alert sound on' : 'Turn alert sound off'} className={cx('flex h-11 w-11 items-center justify-center rounded-full', dark ? 'bg-white/20 text-white' : 'bg-soft text-muted')}>
       {muted ? <VolumeX size={16} aria-hidden /> : <Volume2 size={16} aria-hidden />}
     </button>
   );
@@ -117,7 +117,7 @@ function AlertCenter() {
               <div className="px-5 pt-4 pb-6 text-center text-white" style={{ background: `linear-gradient(150deg, ${l.from}, ${l.to})` }}>
                 <div className="flex items-center justify-between">
                   <span className="rounded-full bg-white/20 px-3 py-1 text-[11px] font-bold uppercase tracking-wide">{l.label}{important.length > 1 ? ` · 1 of ${important.length}` : ''}</span>
-                  <div className="flex gap-1.5">{soundToggle(true)}<button type="button" onClick={() => liveAlerts.snooze(card.id)} aria-label="Remind me later" className="flex h-10 w-10 items-center justify-center rounded-full bg-white/20"><X size={16} aria-hidden /></button></div>
+                  <div className="flex gap-1.5">{soundToggle(true)}<button type="button" onClick={() => liveAlerts.snooze(card.id)} aria-label="Remind me later" className="flex h-11 w-11 items-center justify-center rounded-full bg-white/20"><X size={16} aria-hidden /></button></div>
                 </div>
                 <span className={cx('alert-bounce mx-auto mt-2 flex h-16 w-16 items-center justify-center rounded-2xl bg-white shadow-lg', l.tone === 'bad' && 'text-danger')} style={l.tone === 'bad' ? undefined : { color: l.from }}><Icon size={30} aria-hidden /></span>
                 <h2 id={`alert-${card.id}`} className="mt-3 text-xl font-extrabold leading-tight">{card.title}</h2>
@@ -127,7 +127,7 @@ function AlertCenter() {
                 <p className="mt-1.5 text-xs text-muted">{relative(card.createdAt)}</p>
                 <div className="mt-5 grid gap-2">
                   <Button full size="lg" onClick={() => (card.link ? open(card) : void liveAlerts.dismiss(card.id))}>{actionLabel(card.link)}</Button>
-                  {card.link && <Button full variant="ghost" onClick={() => void liveAlerts.dismiss(card.id)}>Got it</Button>}
+                  {card.link && <Button full variant="ghost" onClick={() => void liveAlerts.dismiss(card.id)}>Got It</Button>}
                 </div>
               </div>
             </div>
@@ -149,7 +149,7 @@ function AlertCenter() {
             <div className="mt-8 grid w-full max-w-sm gap-2">
               {l.tone === 'bad' && <a href={`tel:${emergency}`} className="inline-flex h-14 items-center justify-center gap-2 rounded-full bg-white text-lg font-extrabold text-danger shadow-lg"><Phone size={20} aria-hidden /> Call {emergency}</a>}
               {critical.link && <Button full size="lg" variant={l.tone === 'bad' ? 'secondary' : 'white'} onClick={() => open(critical)}>{actionLabel(critical.link)}</Button>}
-              <button type="button" onClick={() => void liveAlerts.dismiss(critical.id)} className="h-12 rounded-full text-sm font-bold text-white/85">Got it</button>
+              <button type="button" onClick={() => void liveAlerts.dismiss(critical.id)} className="h-12 rounded-full text-sm font-bold text-white/85">Got It</button>
             </div>
           </div>
         );

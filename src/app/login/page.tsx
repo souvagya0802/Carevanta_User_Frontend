@@ -41,13 +41,13 @@ function LoginInner() {
   };
 
   return (
-    <AuthFrame title="Welcome back" subtitle="Sign in to see your appointments, reports and family profiles." footer={<>New here? <Link href={`/signup${next !== '/' ? `?next=${encodeURIComponent(next)}` : ''}`} className="font-bold text-primary">Create a free account</Link></>}>
+    <AuthFrame title="Welcome Back" subtitle="Sign in to see your appointments, reports and family profiles." footer={<>New here? <Link href={`/signup${next !== '/' ? `?next=${encodeURIComponent(next)}` : ''}`} className="font-bold text-primary">Create a Free Account</Link></>}>
       <form onSubmit={submit} className="space-y-4" noValidate>
-        <Field label="Mobile number or email" required><Input inputMode="email" autoComplete="username" placeholder="98000 00000 or you@example.com" value={identifier} onChange={(e) => setIdentifier(e.target.value)} autoFocus /></Field>
+        <Field label="Mobile Number or Email" required><Input inputMode="email" autoComplete="username" placeholder="98000 00000 or you@example.com" value={identifier} onChange={(e) => setIdentifier(e.target.value)} autoFocus /></Field>
         <Field label="Password" required><PasswordInput autoComplete="current-password" value={password} onChange={(e) => setPassword(e.target.value)} /></Field>
         {error && <p role="alert" className="rounded-2xl bg-danger-soft px-3 py-2 text-sm font-medium text-danger">{error}</p>}
         <Button type="submit" full size="lg" loading={busy}>Sign In</Button>
-        <p className="text-center text-sm"><Link href="/forgot-password" className="font-semibold text-primary">Forgot password?</Link></p>
+        <p className="text-center text-sm"><Link href="/forgot-password" className="font-semibold text-primary">Forgot Password?</Link></p>
       </form>
     </AuthFrame>
   );

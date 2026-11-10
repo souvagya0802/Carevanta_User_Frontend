@@ -39,12 +39,12 @@ export default function DoctorPage() {
 
   return (
     <AppShell hideTop>
-      {q.isPending ? <Skeleton card rows={3} /> : q.isError || !d || !d.doctor ? <ErrorState error={q.error ?? new Error('This doctor is not listed')} retry={() => q.refetch()} /> : (
+      {q.isPending ? <Skeleton card rows={3} /> : q.isError || !d || !d.doctor ? <div className="mx-auto max-w-2xl space-y-4 pt-2"><button type="button" onClick={() => router.back()} aria-label="Back" className="flex h-11 w-11 items-center justify-center rounded-full bg-white shadow-card"><ArrowLeft size={18} /></button><ErrorState error={q.error ?? new Error('This doctor is not listed')} retry={() => q.refetch()} /></div> : (
         <div className="space-y-5">
           <section className="relative -mx-4 -mt-3 overflow-hidden bg-brand-deep px-5 pt-[max(12px,env(safe-area-inset-top))] pb-6 text-white lg:mx-0 lg:mt-0 lg:rounded-[32px] lg:p-8">
             <span className="orb -top-16 -right-10 h-56 w-56" />
             <div className="relative">
-              <button type="button" onClick={() => router.back()} aria-label="Back" className="mb-4 flex h-10 w-10 items-center justify-center rounded-full bg-white/15 lg:hidden"><ArrowLeft size={18} /></button>
+              <button type="button" onClick={() => router.back()} aria-label="Back" className="mb-4 flex h-11 w-11 items-center justify-center rounded-full bg-white/15 lg:hidden"><ArrowLeft size={18} /></button>
               <div className="flex items-start gap-4">
                 <Avatar name={d.name} size="xl" className="rounded-3xl bg-white/20 text-white" />
                 <div className="min-w-0 flex-1">
@@ -65,7 +65,7 @@ export default function DoctorPage() {
             <div className="space-y-5">
               {d.doctor.bio && <Card><p className="text-sm text-ink/90">{d.doctor.bio}</p></Card>}
               <section>
-                <SectionTitle title="Where to see this doctor" />
+                <SectionTitle title="Where to See This Doctor" />
                 {mapped.length > 0 && <MapView className="mb-3 h-52 lg:h-64" markers={mapped} you={you} label={`Places where ${d.name} sees patients`} />}
                 <div className="stagger grid gap-2">
                   {places.map((p) => (
@@ -73,7 +73,7 @@ export default function DoctorPage() {
                       <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-primary-soft text-primary"><MapPin size={20} aria-hidden /></span>
                       <span className="min-w-0 flex-1"><span className="block truncate text-sm font-bold">{p.name}</span><span className="block truncate text-xs text-muted">{p.where}{you && p.lat != null && p.lng != null ? ` · ${distanceKm(you, { lat: p.lat, lng: p.lng }).toFixed(1)} km` : ''}</span></span>
                       <span className="tnum text-sm font-extrabold">{money(p.fee)}</span>
-                      {p.lat != null && p.lng != null && <a href={directionsUrl(p.lat, p.lng)} target="_blank" rel="noreferrer" aria-label={`Directions to ${p.name}`} className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary-soft text-primary"><Navigation size={16} aria-hidden /></a>}
+                      {p.lat != null && p.lng != null && <a href={directionsUrl(p.lat, p.lng)} target="_blank" rel="noreferrer" aria-label={`Directions to ${p.name}`} className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-primary-soft text-primary"><Navigation size={16} aria-hidden /></a>}
                     </Card>
                   ))}
                   {places.length === 0 && <p className="text-sm text-muted">No bookable location yet.</p>}
@@ -84,7 +84,7 @@ export default function DoctorPage() {
                 <Card><p className="flex items-center gap-2 text-sm font-extrabold"><Languages size={16} className="text-primary" aria-hidden /> Speaks</p><p className="mt-2 text-sm">{d.doctor.languages.length ? d.doctor.languages.map((l) => LANG[l] ?? l).join(', ') : 'Not stated'}</p>{d.doctor.councils.length > 0 && <p className="mt-3 text-xs text-muted">Registered with {d.doctor.councils.join(', ')}{d.doctor.registrationVerified ? ' · checked by Carevanta' : ''}</p>}</Card>
               </section>
               <section>
-                <SectionTitle title="What patients say" />
+                <SectionTitle title="What Patients Say" />
                 {reviews.isPending ? <Skeleton rows={2} /> : !reviews.data?.length ? <p className="text-sm text-muted">No published reviews yet. Reviews appear after a completed visit and moderation.</p> : (
                   <div className="stagger grid gap-2">{reviews.data.map((r) => <Card key={r.id}><div className="flex items-center justify-between"><Rating value={r.rating} /><span className="text-xs text-muted">{r.author} · {relative(r.createdAt)}</span></div>{r.comment && <p className="mt-1.5 text-sm">{r.comment}</p>}</Card>)}</div>
                 )}
@@ -103,10 +103,10 @@ export default function DoctorPage() {
 
 function BookCard({ id, next, compact }: { id: string; next: string | null; compact?: boolean }) {
   const label = next ? `Next slot ${slotLabel(next, nowMs())}` : 'No open slots right now';
-  if (compact) return <Link href={`/book/${id}`} className="flex items-center gap-3 rounded-full bg-brand p-1.5 pl-5 text-white shadow-float"><span className="min-w-0 flex-1 leading-tight">{next ? <><span className="block text-[10px] font-semibold text-white/80">Next slot</span><span className="block truncate text-xs font-bold">{slotLabel(next, nowMs())}</span></> : <span className="block truncate text-xs font-semibold">{label}</span>}</span><span className="flex h-11 items-center gap-2 rounded-full bg-white px-5 text-sm font-extrabold text-primary"><CalendarCheck size={16} aria-hidden /> Book</span></Link>;
+  if (compact) return <Link href={`/book/${id}`} className="flex items-center gap-3 rounded-full bg-brand p-1.5 pl-5 text-white shadow-float"><span className="min-w-0 flex-1 leading-tight">{next ? <><span className="block text-[10px] font-semibold text-white/80">Next Slot</span><span className="block truncate text-xs font-bold">{slotLabel(next, nowMs())}</span></> : <span className="block truncate text-xs font-semibold">{label}</span>}</span><span className="flex h-11 items-center gap-2 rounded-full bg-white px-5 text-sm font-extrabold text-primary"><CalendarCheck size={16} aria-hidden /> Book</span></Link>;
   return (
     <div className="card-3d sticky top-24 rounded-3xl p-5">
-      <p className="text-sm font-extrabold">Book an appointment</p>
+      <p className="text-sm font-extrabold">Book an Appointment</p>
       <p className="mt-1 text-xs text-muted">{label}. Pick the place, day and time; pay online or at the counter.</p>
       <Link href={`/book/${id}`}><Button full size="lg" className="mt-4"><CalendarCheck size={18} /> Choose a Slot</Button></Link>
     </div>

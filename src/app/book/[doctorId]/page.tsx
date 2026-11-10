@@ -76,7 +76,7 @@ function BookInner() {
   return (
     <AppShell hideTop>
       <div className="mx-auto max-w-2xl space-y-4">
-        <div className="flex items-center gap-3"><button type="button" onClick={() => router.back()} aria-label="Back" className="flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-card"><ArrowLeft size={18} /></button><h1 className="text-xl font-extrabold">Book an appointment</h1></div>
+        <div className="flex items-center gap-3"><button type="button" onClick={() => router.back()} aria-label="Back" className="flex h-11 w-11 items-center justify-center rounded-full bg-white shadow-card"><ArrowLeft size={18} /></button><h1 className="text-xl font-extrabold">Book an Appointment</h1></div>
         {doctor.data?.doctor && <Card className="flex items-center gap-3"><Avatar name={doctor.data.name} /><div className="min-w-0 flex-1"><p className="truncate text-sm font-extrabold">{doctor.data.name}</p><p className="truncate text-xs text-muted">{doctor.data.doctor.specialities[0]?.name ?? 'Doctor'}</p></div></Card>}
         <StepBar steps={['Place', 'Time', 'Patient', 'Confirm']} current={step} />
 
@@ -86,10 +86,10 @@ function BookInner() {
             <h2 className="mt-3 text-xl font-extrabold">{done.status === 'CONFIRMED' ? 'You are booked' : 'Request sent'}</h2>
             <p className="mt-1 text-sm text-muted">Reference <span className="font-mono font-semibold text-ink">{done.reference}</span>. {done.status === 'CONFIRMED' ? 'A confirmation is on its way.' : 'The clinic confirms shortly; you will be notified.'}</p>
             {chosen && <p className="mt-2 text-sm font-semibold">{dayLabel(activeDay)} · {time(chosen.startsAt)} · {chosen.locationName}</p>}
-            <div className="mt-5 grid gap-2"><Link href={`/appointments/${done.id}`}><Button full>View appointment</Button></Link><Link href="/"><Button full variant="ghost">Back to home</Button></Link></div>
+            <div className="mt-5 grid gap-2"><Link href={`/appointments/${done.id}`}><Button full>View Appointment</Button></Link><Link href="/"><Button full variant="ghost">Back to Home</Button></Link></div>
           </Card>
         ) : slots.isPending || doctor.isPending ? <Skeleton card rows={3} /> : slots.isError ? <ErrorState error={slots.error} retry={() => slots.refetch()} /> : byLocation.size === 0 ? (
-          <Card className="text-center"><p className="font-bold">No open slots in the next two weeks</p><p className="mt-1 text-sm text-muted">The doctor has not published timings yet, or everything is taken. Try another doctor nearby.</p><Link href="/search?type=doctors"><Button className="mt-4" variant="soft">Find another doctor</Button></Link></Card>
+          <Card className="text-center"><p className="font-bold">No open slots in the next two weeks</p><p className="mt-1 text-sm text-muted">The doctor has not published timings yet, or everything is taken. Try another doctor nearby.</p><Link href="/search?type=doctors"><Button className="mt-4" variant="soft">Find Another Doctor</Button></Link></Card>
         ) : (
           <>
             <section>
@@ -108,8 +108,8 @@ function BookInner() {
               <RequireSignIn message="Sign in so the appointment is saved to your account and the clinic can reach you.">
                 <section>
                   <h2 className="mb-2 flex items-center gap-2 text-sm font-extrabold"><UserRound size={16} className="text-primary" aria-hidden /> Who is this for?</h2>
-                  {profiles.isPending ? <Skeleton rows={2} /> : <div className="grid gap-2">{(profiles.data ?? []).map((p) => <OptionCard key={p.id} selected={activeProfile === p.id} onSelect={() => setProfileId(p.id)} title={p.fullName} description={p.relationship === 'SELF' ? 'You' : p.relationship.toLowerCase()} />)}<Link href={`/family?next=${encodeURIComponent(`/book/${doctorId}`)}`} className="inline-flex min-h-10 items-center text-sm font-semibold text-primary">+ Add a family member</Link></div>}
-                  <Field label="Reason for visit" hint="Optional. Helps the doctor prepare." className="mt-3"><Textarea placeholder="e.g. Fever for 3 days, follow-up on reports" maxLength={500} value={reason} onChange={(e) => setReason(e.target.value)} /></Field>
+                  {profiles.isPending ? <Skeleton rows={2} /> : <div className="grid gap-2">{(profiles.data ?? []).map((p) => <OptionCard key={p.id} selected={activeProfile === p.id} onSelect={() => setProfileId(p.id)} title={p.fullName} description={p.relationship === 'SELF' ? 'You' : p.relationship.toLowerCase()} />)}<Link href={`/family?next=${encodeURIComponent(`/book/${doctorId}`)}`} className="inline-flex min-h-11 items-center text-sm font-semibold text-primary">+ Add a Family Member</Link></div>}
+                  <Field label="Reason for Visit" hint="Optional. Helps the doctor prepare." className="mt-3"><Textarea placeholder="e.g. Fever for 3 days, follow-up on reports" maxLength={500} value={reason} onChange={(e) => setReason(e.target.value)} /></Field>
                 </section>
                 <section>
                   <h2 className="mb-2 flex items-center gap-2 text-sm font-extrabold"><CreditCard size={16} className="text-primary" aria-hidden /> Payment</h2>

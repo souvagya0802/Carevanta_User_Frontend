@@ -48,10 +48,10 @@ export function UploadSheet({ open, onClose, onDone, profileId, profileName }: {
     } catch (e) { toast.error(e); } finally { setBusy(false); }
   };
   return (
-    <Sheet open={open} onClose={onClose} title="Upload a prescription" description="A clear photo of the whole page, or the PDF your doctor shared. Up to 8 MB." footer={<Button full onClick={() => void submit()} loading={busy} disabled={!file || !chosen}>Upload</Button>}>
+    <Sheet open={open} onClose={onClose} title="Upload a Prescription" description="A clear photo of the whole page, or the PDF your doctor shared. Up to 8 MB." footer={<Button full onClick={() => void submit()} loading={busy} disabled={!file || !chosen}>Upload</Button>}>
       <div className="grid gap-3">
         {profileId ? <p className="rounded-2xl bg-soft px-4 py-3 text-sm">For <b>{profileName ?? 'this patient'}</b></p> : <Field label="For"><Select value={chosen} onChange={(e) => setPicked(e.target.value)}>{(profiles.data ?? []).map((p) => <option key={p.id} value={p.id}>{p.fullName}{p.relationship === 'SELF' ? ' (you)' : ''}</option>)}</Select></Field>}
-        <Field label="Issued on" hint="Optional"><Input type="date" value={issuedOn} max={today()} onChange={(e) => setIssuedOn(e.target.value)} /></Field>
+        <Field label="Issued On" hint="Optional"><Input type="date" value={issuedOn} max={today()} onChange={(e) => setIssuedOn(e.target.value)} /></Field>
         <input ref={input} type="file" accept={RX_TYPES.join(',')} className="hidden" onChange={(e) => setFile(e.target.files?.[0] ?? null)} />
         <button type="button" onClick={() => input.current?.click()} className="flex min-h-28 flex-col items-center justify-center gap-2 rounded-3xl border-2 border-dashed border-primary/40 bg-primary-soft/40 p-4 text-sm font-semibold text-primary">
           <Upload size={22} />{file ? <span className="text-ink">{file.name} · {(file.size / 1024 / 1024).toFixed(1)} MB</span> : 'Tap to choose a photo or PDF'}
@@ -84,7 +84,7 @@ export function PrescriptionPicker({ rx, value, onChange, profileId, profileName
         </div>
       ) : <p className="rounded-2xl bg-soft px-4 py-3 text-sm text-muted">No prescription uploaded for {profileName} yet.</p>}
       <button type="button" onClick={() => setUploading(true)} disabled={!profileId} className="mt-2 flex min-h-12 w-full items-center gap-3 rounded-2xl border-2 border-dashed border-primary/40 bg-primary-soft/40 px-4 py-3 text-left text-sm font-semibold text-primary disabled:opacity-50">
-        <FileUp size={18} aria-hidden /><span className="flex-1">{rx.usable.length ? 'Upload a new prescription' : 'Upload a prescription'}</span>
+        <FileUp size={18} aria-hidden /><span className="flex-1">{rx.usable.length ? 'Upload a new prescription' : 'Upload a Prescription'}</span>
       </button>
       {error && <p role="alert" className="mt-1.5 text-xs font-medium text-danger">{error}</p>}
       <UploadSheet open={uploading} onClose={() => setUploading(false)} profileId={profileId} profileName={profileName} onDone={onChange} />

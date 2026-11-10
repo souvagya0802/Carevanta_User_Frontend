@@ -26,7 +26,7 @@ export default function NotificationsPage() {
   return (
     <AppShell>
       <RequireSignIn>
-        <PageTitle title="Notifications" subtitle={unread ? `${unread} unread` : undefined} right={unread > 0 ? <Button size="sm" variant="secondary" onClick={() => readAll.mutate()} loading={readAll.isPending}><CheckCheck size={14} /> Mark all read</Button> : undefined} />
+        <PageTitle title="Notifications" subtitle={unread ? `${unread} unread` : undefined} right={unread > 0 ? <Button size="sm" variant="secondary" onClick={() => readAll.mutate()} loading={readAll.isPending}><CheckCheck size={14} /> Mark All Read</Button> : undefined} />
         <div className="mb-4"><PushRow /></div>
         {q.isPending ? <Skeleton card rows={4} /> : q.isError ? <ErrorState error={q.error} retry={() => q.refetch()} /> : !q.data?.length ? <EmptyState icon={Bell} title="Nothing yet" description="Appointment confirmations, report alerts and order updates arrive here." /> : (
           <ul className="stagger grid gap-2">

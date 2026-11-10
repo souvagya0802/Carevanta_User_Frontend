@@ -73,7 +73,7 @@ export function HomeScreen() {
 
         {/* Categories */}
         <section>
-          <SectionTitle title="What do you need?" />
+          <SectionTitle title="What Do You Need?" />
           <div className="stagger grid grid-cols-3 gap-3 sm:grid-cols-4 lg:grid-cols-6">
             {ui.categories.map((c) => (
               <Link key={c.key} href={c.href} className="card-3d flex flex-col items-center gap-2 rounded-3xl p-3 text-center">
@@ -86,7 +86,7 @@ export function HomeScreen() {
 
         {/* Top doctors */}
         <section>
-          <SectionTitle title="Top-rated doctors" action="See all" href="/search?type=doctors" />
+          <SectionTitle title="Top-Rated Doctors" action="See all" href="/search?type=doctors" />
           {home.isPending ? <Skeleton card rows={2} className="sm:grid-cols-2" /> : (
             <div className="no-scrollbar -mx-4 flex snap-x gap-3 overflow-x-auto px-4 pb-1 lg:mx-0 lg:grid lg:grid-cols-4 lg:px-0">
               {(home.data?.topDoctors ?? []).map((d) => (
@@ -102,7 +102,7 @@ export function HomeScreen() {
 
         {/* Popular tests */}
         <section>
-          <SectionTitle title="Popular lab tests" action="All tests" href="/tests" />
+          <SectionTitle title="Popular Lab Tests" action="All tests" href="/tests" />
           {home.isPending ? <Skeleton rows={3} /> : (
             <div className="stagger grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
               {(home.data?.popularTests ?? []).map((t) => (

@@ -25,8 +25,8 @@ export function LocationPill({ compact }: { compact?: boolean }) {
   const [open, setOpen] = useState(false);
   return (
     <>
-      <button type="button" onClick={() => setOpen(true)} className={cx('flex h-10 min-w-0 items-center gap-1.5 rounded-full bg-white px-3 text-sm font-semibold shadow-card', compact && 'max-w-[7.5rem] min-[400px]:max-w-36')}>
-        <MapPin size={16} className="shrink-0 text-primary" aria-hidden /><span className="truncate">{place?.label ?? 'Set location'}</span>
+      <button type="button" onClick={() => setOpen(true)} className={cx('flex h-11 min-w-0 items-center gap-1.5 rounded-full bg-white px-3 text-sm font-semibold shadow-card', compact && 'max-w-[7.5rem] min-[400px]:max-w-36')}>
+        <MapPin size={16} className="shrink-0 text-primary" aria-hidden /><span className="truncate">{place?.label ?? 'Set Location'}</span>
       </button>
       {/* Mounted only while open, so each opening starts from the saved place. */}
       {open && <LocationSheet onClose={() => setOpen(false)} />}
@@ -73,9 +73,9 @@ function LocationSheet({ onClose }: { onClose: () => void }) {
   }
 
   return (
-    <Sheet open onClose={onClose} title="Where are you?" description="Used to show distance and what is near you. Never shared with providers until you book." footer={<Button full onClick={save} disabled={!draft || naming}>{draft ? `Use ${name.trim() || draft.label}` : 'Choose a place first'}</Button>}>
+    <Sheet open onClose={onClose} title="Where Are You?" description="Used to show distance and what is near you. Never shared with providers until you book." footer={<Button full onClick={save} disabled={!draft || naming}>{draft ? `Use ${name.trim() || draft.label}` : 'Choose a place first'}</Button>}>
       <div className="space-y-3">
-        <Button full variant="soft" onClick={() => void fromGps()} loading={asking}><Crosshair size={16} /> Use my current location</Button>
+        <Button full variant="soft" onClick={() => void fromGps()} loading={asking}><Crosshair size={16} /> Use My Current Location</Button>
         {error && <p className="text-xs text-danger">{error}</p>}
 
         <PlaceSearch near={draft} onPick={(p) => setDraft({ lat: p.latitude, lng: p.longitude, label: shortPlaceName(p.address, p.label.split(',')[0]), source: 'manual' })} />

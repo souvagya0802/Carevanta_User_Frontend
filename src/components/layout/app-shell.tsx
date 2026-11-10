@@ -63,10 +63,10 @@ export function AppShell({ children, hideTop }: { children: ReactNode; hideTop?:
             <LocationPill />
             {me ? (
               <>
-                <Link href="/notifications" aria-label="Notifications" className="relative flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-card"><Bell size={18} />{(unread.data?.unread ?? 0) > 0 && <span className="absolute -top-0.5 -right-0.5 h-4 min-w-4 rounded-full bg-danger px-1 text-center text-[10px] font-bold leading-4 text-white">{unread.data!.unread}</span>}</Link>
+                <Link href="/notifications" aria-label="Notifications" className="relative flex h-11 w-11 items-center justify-center rounded-full bg-white shadow-card"><Bell size={18} />{(unread.data?.unread ?? 0) > 0 && <span className="absolute -top-0.5 -right-0.5 h-4 min-w-4 rounded-full bg-danger px-1 text-center text-[10px] font-bold leading-4 text-white">{unread.data!.unread}</span>}</Link>
                 <Link href="/account" className="flex items-center gap-2 rounded-full bg-white py-1 pr-3 pl-1 shadow-card"><Avatar name={me.fullName} size="sm" className="rounded-full" /><span className="text-sm font-semibold">{me.fullName.split(' ')[0]}</span></Link>
               </>
-            ) : restoring ? <span aria-hidden className="shimmer block h-10 w-28 rounded-full" /> : <SignedOutSlot pending={pending} placeholder={<span aria-hidden className="shimmer block h-10 w-28 rounded-full" />}><Link href="/login"><Button size="sm">Sign In</Button></Link></SignedOutSlot>}
+            ) : restoring ? <span aria-hidden className="shimmer block h-11 w-28 rounded-full" /> : <SignedOutSlot pending={pending} placeholder={<span aria-hidden className="shimmer block h-11 w-28 rounded-full" />}><Link href="/login"><Button size="sm">Sign In</Button></Link></SignedOutSlot>}
           </div>
         </div>
       </header>
@@ -77,7 +77,7 @@ export function AppShell({ children, hideTop }: { children: ReactNode; hideTop?:
           <Link href="/" aria-label={`${branding.name} home`} className="flex shrink-0 items-center gap-2"><Logo size="nav" className="rounded-2xl" /><span className="hidden text-base font-extrabold tracking-tight min-[400px]:inline">{branding.name}</span></Link>
           <div className="ml-auto flex min-w-0 items-center gap-2">
             <LocationPill compact />
-            {me ? <Link href="/notifications" aria-label="Notifications" className="relative flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white shadow-card"><Bell size={18} />{(unread.data?.unread ?? 0) > 0 && <span className="absolute -top-0.5 -right-0.5 h-4 min-w-4 rounded-full bg-danger px-1 text-center text-[10px] font-bold leading-4 text-white">{unread.data!.unread}</span>}</Link> : restoring ? <span aria-hidden className="shimmer block h-10 w-10 shrink-0 rounded-full" /> : <SignedOutSlot pending={pending} placeholder={<span aria-hidden className="shimmer block h-10 w-10 shrink-0 rounded-full" />}><Link href="/login" className="flex h-10 shrink-0 items-center whitespace-nowrap rounded-full bg-primary px-4 text-sm font-semibold text-white shadow-glow">Sign In</Link></SignedOutSlot>}
+            {me ? <Link href="/notifications" aria-label="Notifications" className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white shadow-card"><Bell size={18} />{(unread.data?.unread ?? 0) > 0 && <span className="absolute -top-0.5 -right-0.5 h-4 min-w-4 rounded-full bg-danger px-1 text-center text-[10px] font-bold leading-4 text-white">{unread.data!.unread}</span>}</Link> : restoring ? <span aria-hidden className="shimmer block h-11 w-11 shrink-0 rounded-full" /> : <SignedOutSlot pending={pending} placeholder={<span aria-hidden className="shimmer block h-11 w-11 shrink-0 rounded-full" />}><Link href="/login" className="flex h-11 shrink-0 items-center whitespace-nowrap rounded-full bg-primary px-4 text-sm font-semibold text-white shadow-glow">Sign In</Link></SignedOutSlot>}
           </div>
         </header>
       )}
@@ -119,7 +119,7 @@ export function RequireSignIn({ children, message }: { children: ReactNode; mess
     return (
       <div className="card-3d mx-auto mt-6 max-w-md rounded-3xl p-6 text-center">
         <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-primary-soft text-primary"><UserRound size={26} aria-hidden /></span>
-        <h2 className="mt-3 text-lg font-extrabold">Sign in to continue</h2>
+        <h2 className="mt-3 text-lg font-extrabold">Sign In to Continue</h2>
         <p className="mt-1 text-sm text-muted">{message ?? 'Your bookings, reports and family profiles are kept safely in your account.'}</p>
         <div className="mt-5 grid gap-2"><Button full onClick={() => router.push(`/login?next=${encodeURIComponent(pathname)}`)}>Sign In</Button><Button full variant="secondary" onClick={() => router.push(`/signup?next=${encodeURIComponent(pathname)}`)}>Create an Account</Button></div>
       </div>

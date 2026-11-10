@@ -46,7 +46,7 @@ export default function EmergencyStatusPage() {
     <AppShell hideTop>
       <RequireSignIn>
         <div className="mx-auto max-w-2xl space-y-4">
-          <div className="flex items-center gap-3"><button type="button" onClick={() => router.push('/emergency')} aria-label="Back" className="flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-card"><ArrowLeft size={18} /></button><h1 className="text-xl font-extrabold">Ambulance request</h1></div>
+          <div className="flex items-center gap-3"><button type="button" onClick={() => router.push('/emergency')} aria-label="Back" className="flex h-11 w-11 items-center justify-center rounded-full bg-white shadow-card"><ArrowLeft size={18} /></button><h1 className="text-xl font-extrabold">Ambulance Request</h1></div>
           {q.isPending ? <Skeleton card rows={3} /> : q.isError || !d ? <ErrorState error={q.error} retry={() => q.refetch()} /> : (
             <>
               <section className={cx('relative overflow-hidden rounded-[32px] p-6 text-white', d.ambulanceConfirmed ? 'bg-gradient-to-br from-success to-emerald-500' : fallback || d.status === 'CANCELLED' ? 'bg-gradient-to-br from-slate-600 to-slate-800' : 'bg-gradient-to-br from-danger to-rose-500')}>

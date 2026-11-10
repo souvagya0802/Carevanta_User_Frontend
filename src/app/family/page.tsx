@@ -34,7 +34,7 @@ export default function FamilyPage() {
               <Card key={p.id} className="flex items-center gap-3">
                 <Avatar name={p.fullName} tone={TONES[i % TONES.length]} />
                 <span className="min-w-0 flex-1"><span className="block truncate text-sm font-extrabold">{p.fullName}</span><span className="block text-xs text-muted">{p.relationship === 'SELF' ? 'You' : title(p.relationship)}{p.gender && p.gender !== 'UNDISCLOSED' ? ` · ${title(p.gender)}` : ''}{age(p.dateOfBirth) ? ` · ${age(p.dateOfBirth)}` : ''}</span></span>
-                <button type="button" aria-label={`Edit ${p.fullName}`} onClick={() => setEditing(p)} className="flex h-10 w-10 items-center justify-center rounded-full bg-soft text-muted"><Pencil size={15} /></button>
+                <button type="button" aria-label={`Edit ${p.fullName}`} onClick={() => setEditing(p)} className="flex h-11 w-11 items-center justify-center rounded-full bg-soft text-muted"><Pencil size={15} /></button>
               </Card>
             ))}
           </div>
@@ -57,11 +57,11 @@ function ProfileSheet({ profile, onClose }: { profile: Profile | 'new' | null; o
   }, { success: isNew ? 'Profile added' : 'Profile updated', invalidate: inv, onSuccess: onClose });
   const remove = useAction(() => api.patch(`/patient/profiles/${p!.id}`, { isActive: false }), { success: 'Profile removed', invalidate: inv, onSuccess: onClose });
   return (
-    <Sheet open={profile !== null} onClose={onClose} title={isNew ? 'Add a family member' : `Edit ${p?.fullName ?? ''}`} footer={<><Button full onClick={() => save.mutate()} loading={save.isPending} disabled={f.fullName.trim().length < 2}>{isNew ? 'Add profile' : 'Save'}</Button>{p && p.relationship !== 'SELF' && <Button variant="ghost" className="text-danger" onClick={() => { if (confirm(`Remove ${p.fullName}? Past records stay in your account.`)) remove.mutate(); }} loading={remove.isPending}>Remove</Button>}</>}>
+    <Sheet open={profile !== null} onClose={onClose} title={isNew ? 'Add a Family Member' : `Edit ${p?.fullName ?? ''}`} footer={<><Button full onClick={() => save.mutate()} loading={save.isPending} disabled={f.fullName.trim().length < 2}>{isNew ? 'Add Profile' : 'Save'}</Button>{p && p.relationship !== 'SELF' && <Button variant="ghost" className="text-danger" onClick={() => { if (confirm(`Remove ${p.fullName}? Past records stay in your account.`)) remove.mutate(); }} loading={remove.isPending}>Remove</Button>}</>}>
       <div className="grid gap-3">
-        <Field label="Full name" required><Input value={f.fullName} onChange={(e) => setF({ ...f, fullName: e.target.value })} autoFocus /></Field>
+        <Field label="Full Name" required><Input value={f.fullName} onChange={(e) => setF({ ...f, fullName: e.target.value })} autoFocus /></Field>
         {isNew && <Field label="Relationship"><Select value={f.relationship} onChange={(e) => setF({ ...f, relationship: e.target.value })}>{RELATIONS.map((r) => <option key={r} value={r}>{title(r)}</option>)}</Select></Field>}
-        <Field label="Date of birth"><Input type="date" value={f.dateOfBirth} max={today()} onChange={(e) => setF({ ...f, dateOfBirth: e.target.value })} /></Field>
+        <Field label="Date of Birth"><Input type="date" value={f.dateOfBirth} max={today()} onChange={(e) => setF({ ...f, dateOfBirth: e.target.value })} /></Field>
         <Field label="Gender"><Select value={f.gender} onChange={(e) => setF({ ...f, gender: e.target.value })}><option value="">Prefer not to say</option>{GENDERS.map((g) => <option key={g} value={g}>{title(g)}</option>)}</Select></Field>
       </div>
     </Sheet>

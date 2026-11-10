@@ -84,7 +84,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
               <p className="font-bold">{t.title}</p>
               {t.description && <p className="mt-0.5 text-muted">{t.description}</p>}
             </div>
-            <button type="button" aria-label="Dismiss" onClick={() => remove(t.id)} className="-my-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-muted hover:bg-soft hover:text-ink">
+            <button type="button" aria-label="Dismiss" onClick={() => remove(t.id)} className="-my-1 flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-muted hover:bg-soft hover:text-ink">
               <X size={16} />
             </button>
           </div>

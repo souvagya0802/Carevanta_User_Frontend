@@ -17,9 +17,9 @@ export default function TestsPage() {
   const items = (services.data ?? []).filter((s) => cat || s.category === 'DIAGNOSTIC_TEST' || s.category === 'IMAGING');
   return (
     <AppShell>
-      <PageTitle title="Lab tests & scans" subtitle="Compare prices from verified labs, choose home collection where offered, and get reports on your phone." />
+      <PageTitle title="Lab Tests & Scans" subtitle="Compare prices from verified labs, choose home collection where offered, and get reports on your phone." />
       <div className="flex items-center gap-2 rounded-full bg-white p-1.5 pl-4 shadow-card"><Search size={18} className="shrink-0 text-muted" aria-hidden /><input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Blood sugar, thyroid, MRI, X-ray…" aria-label="Search tests" className="h-10 min-w-0 flex-1 bg-transparent text-sm outline-none" /></div>
-      <div className="mt-3 flex gap-2"><Chip active={cat === ''} onClick={() => setCat('')}>All</Chip><Chip active={cat === 'DIAGNOSTIC_TEST'} onClick={() => setCat('DIAGNOSTIC_TEST')}>Lab tests</Chip><Chip active={cat === 'IMAGING'} onClick={() => setCat('IMAGING')}>Scans & imaging</Chip></div>
+      <div className="mt-3 flex gap-2"><Chip active={cat === ''} onClick={() => setCat('')}>All</Chip><Chip active={cat === 'DIAGNOSTIC_TEST'} onClick={() => setCat('DIAGNOSTIC_TEST')}>Lab Tests</Chip><Chip active={cat === 'IMAGING'} onClick={() => setCat('IMAGING')}>Scans & Imaging</Chip></div>
       <div className="mt-4">
         {services.isPending ? <Skeleton card rows={5} /> : services.isError ? <ErrorState error={services.error} retry={() => services.refetch()} /> : items.length === 0 ? <EmptyState icon={FlaskConical} title="No test matches" description="Try the generic name (e.g. CBC, LFT) or a body part." /> : (
           <div className="stagger grid gap-2 lg:grid-cols-2">

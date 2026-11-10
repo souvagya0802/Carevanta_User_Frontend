@@ -82,17 +82,17 @@ export default function EmergencyPage() {
               <div className="flex flex-wrap items-center gap-2 rounded-2xl bg-soft p-3 text-sm">
                 <MapPin size={16} className="text-primary" />
                 <span className="flex-1 font-semibold">{pickup ? (looking ? 'Finding the address…' : 'Pickup point set on the map') : 'Location not shared yet'}</span>
-                <Button size="sm" variant="secondary" onClick={() => void shareGps()} loading={locating}>{pickup ? 'Use GPS again' : 'Share GPS location'}</Button>
+                <Button size="sm" variant="secondary" onClick={() => void shareGps()} loading={locating}>{pickup ? 'Use GPS Again' : 'Share GPS Location'}</Button>
               </div>
               <PlaceSearch near={pickup} onPick={(p) => void movePickup({ lat: p.latitude, lng: p.longitude }, p.address)} placeholder="Or search the pickup place or landmark" />
               {pickup && <MapView pin={pickup} onPinMove={(p) => void movePickup(p)} className="h-52" label="Pickup point. Tap or drag the pin to the exact spot." />}
               {pickup && <p className="-mt-1 text-xs text-muted">Drag the red pin to the exact gate or door, so the driver finds you.</p>}
-              <Field label="Pickup address or landmark" hint="Street, village, landmark. Helps the driver when GPS is off."><Textarea value={address} onChange={(e) => setAddress(e.target.value)} maxLength={500} placeholder="Near Moyna bus stand, opposite the school" /></Field>
+              <Field label="Pickup Address or Landmark" hint="Street, village, landmark. Helps the driver when GPS is off."><Textarea value={address} onChange={(e) => setAddress(e.target.value)} maxLength={500} placeholder="Near the bus stand, opposite the school" /></Field>
               <div className="grid gap-3 sm:grid-cols-2">
                 <Field label="District"><Input value={district} onChange={(e) => setDistrict(e.target.value)} placeholder="Your district" maxLength={80} /></Field>
-                <Field label="Callback number" hint="10-digit mobile the operator can call"><Input inputMode="numeric" value={phone} onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))} placeholder="98300 00000" aria-invalid={phone.length > 0 && !PHONE.test(phone)} /></Field>
+                <Field label="Callback Number" hint="10-digit mobile the operator can call"><Input inputMode="numeric" value={phone} onChange={(e) => setPhone(e.target.value.replace(/\D/g, '').slice(0, 10))} placeholder="98300 00000" aria-invalid={phone.length > 0 && !PHONE.test(phone)} /></Field>
               </div>
-              <Button variant="danger" size="lg" full onClick={() => { if (!attempt.busy) open.mutate(); }} loading={open.isPending} disabled={!canSend}><ShieldAlert size={18} /> Request an ambulance</Button>
+              <Button variant="danger" size="lg" full onClick={() => { if (!attempt.busy) open.mutate(); }} loading={open.isPending} disabled={!canSend}><ShieldAlert size={18} /> Request an Ambulance</Button>
               {!canSend && <p className="text-xs text-muted">Share your GPS location or type the district or address first.</p>}
             </div>
           )}
@@ -100,7 +100,7 @@ export default function EmergencyPage() {
 
         {me && (past.data?.length ?? 0) > 0 && (
           <section>
-            <h2 className="mb-2 text-base font-extrabold">Your recent requests</h2>
+            <h2 className="mb-2 text-base font-extrabold">Your Recent Requests</h2>
             <div className="stagger grid gap-2">{past.data!.map((r) => <Card key={r.id} href={`/emergency/${r.id}`} className="flex items-center gap-3"><Siren size={18} className="text-danger" /><span className="min-w-0 flex-1"><span className="block text-sm font-bold">{r.reference}</span><span className="block text-xs text-muted">{r.pickupDistrict ?? ''} · {relative(r.createdAt)}</span></span><StatusBadge status={r.status} /><ChevronRight size={16} className="text-muted" /></Card>)}</div>
           </section>
         )}

@@ -31,12 +31,12 @@ function VerifyInner() {
     onError: (e) => setError(e instanceof ApiError ? (e.status === 429 ? 'Too many tries. Wait a minute, then try again.' : 'That code is not right or has expired. Check it, or send a new one.') : 'Could not verify right now. Check your connection.') });
 
   return (
-    <AuthFrame title={channel === 'SMS' ? 'Confirm your mobile number' : 'Confirm your email'} subtitle={channel === 'SMS' ? `We sent a 6-digit code to ${me?.phone ? phone(me.phone) : 'your mobile'}.` : `We sent a link and code to ${me?.email ?? 'your email'}.`} footer={<Link href={next} className="font-semibold text-muted underline-offset-2 hover:underline">Do this later</Link>}>
+    <AuthFrame title={channel === 'SMS' ? 'Confirm your mobile number' : 'Confirm Your Email'} subtitle={channel === 'SMS' ? `We sent a 6-digit code to ${me?.phone ? phone(me.phone) : 'your mobile'}.` : `We sent a link and code to ${me?.email ?? 'your email'}.`} footer={<Link href={next} className="font-semibold text-muted underline-offset-2 hover:underline">Do This Later</Link>}>
       <div className="space-y-4">
         <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-primary-soft text-primary">{channel === 'SMS' ? <Smartphone size={26} aria-hidden /> : <MailCheck size={26} aria-hidden />}</span>
-        <Field label="Verification code" required error={error ?? undefined}><Input inputMode="numeric" autoComplete="one-time-code" maxLength={8} value={code} onChange={(e) => { setCode(e.target.value.replace(/\s/g, '')); setError(null); }} placeholder="123456" className="text-center text-xl tracking-[0.4em] font-extrabold" autoFocus /></Field>
+        <Field label="Verification Code" required error={error ?? undefined}><Input inputMode="numeric" autoComplete="one-time-code" maxLength={8} value={code} onChange={(e) => { setCode(e.target.value.replace(/\s/g, '')); setError(null); }} placeholder="123456" className="text-center text-xl tracking-[0.4em] font-extrabold" autoFocus /></Field>
         <Button full size="lg" onClick={() => confirm.mutate()} loading={confirm.isPending} disabled={code.trim().length < 6}>Verify</Button>
-        <Button full variant="ghost" onClick={() => resend.mutate()} loading={resend.isPending}>Send the code again</Button>
+        <Button full variant="ghost" onClick={() => resend.mutate()} loading={resend.isPending}>Send the Code Again</Button>
         <p className="text-center text-xs text-muted">Verified contacts receive booking confirmations, reminders and report alerts.</p>
       </div>
     </AuthFrame>

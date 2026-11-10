@@ -26,7 +26,7 @@ const variants: Record<Variant, string> = {
 export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> { variant?: Variant; size?: 'sm' | 'md' | 'lg'; loading?: boolean; full?: boolean }
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button({ variant = 'primary', size = 'md', loading, full, className, children, disabled, ...rest }, ref) {
   return (
-    <button ref={ref} type={rest.type ?? 'button'} disabled={disabled || loading} aria-busy={loading || undefined} className={cx('inline-flex items-center justify-center gap-2 rounded-full font-semibold whitespace-nowrap', size === 'sm' ? 'h-10 px-4 text-sm' : size === 'lg' ? 'h-14 px-7 text-base' : 'h-12 px-5 text-sm', full && 'w-full', variants[variant], className)} {...rest}>
+    <button ref={ref} type={rest.type ?? 'button'} disabled={disabled || loading} aria-busy={loading || undefined} className={cx('inline-flex items-center justify-center gap-2 rounded-full font-semibold whitespace-nowrap', size === 'sm' ? 'h-11 px-4 text-sm' : size === 'lg' ? 'h-14 px-7 text-base' : 'h-12 px-5 text-sm', full && 'w-full', variants[variant], className)} {...rest}>
       {loading && <Loader2 size={16} className="animate-spin" aria-hidden />}
       {children}
     </button>
@@ -62,7 +62,7 @@ export function SectionTitle({ title, action, href, className }: { title: string
 }
 
 export function Chip({ active, children, onClick, className }: { active?: boolean; children: ReactNode; onClick?: () => void; className?: string }) {
-  return <button type="button" aria-pressed={active} onClick={onClick} className={cx('inline-flex h-10 shrink-0 items-center gap-1.5 rounded-full border px-3.5 text-sm font-semibold', active ? 'border-primary bg-primary text-white shadow-glow' : 'border-line bg-surface text-ink hover:bg-soft', className)}>{children}</button>;
+  return <button type="button" aria-pressed={active} onClick={onClick} className={cx('inline-flex h-11 shrink-0 items-center gap-1.5 rounded-full border px-3.5 text-sm font-semibold', active ? 'border-primary bg-primary text-white shadow-glow' : 'border-line bg-surface text-ink hover:bg-soft', className)}>{children}</button>;
 }
 
 export function Badge({ children, tone = 'muted' }: { children: ReactNode; tone?: 'primary' | 'success' | 'warning' | 'danger' | 'muted' | 'violet' | 'white' }) {
@@ -108,7 +108,7 @@ export const PasswordInput = forwardRef<HTMLInputElement, Omit<InputHTMLAttribut
   return (
     <div className="relative">
       <input ref={ref} type={show ? 'text' : 'password'} className={cx(control, 'pr-12', className)} {...rest} />
-      <button type="button" aria-label={show ? 'Hide password' : 'Show password'} onClick={() => setShow((s) => !s)} className="absolute top-1/2 right-1 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-full text-muted hover:text-ink">{show ? <EyeOff size={18} /> : <Eye size={18} />}</button>
+      <button type="button" aria-label={show ? 'Hide password' : 'Show password'} onClick={() => setShow((s) => !s)} className="absolute top-1/2 right-1 flex h-11 w-11 -translate-y-1/2 items-center justify-center rounded-full text-muted hover:text-ink">{show ? <EyeOff size={18} /> : <Eye size={18} />}</button>
     </div>
   );
 });
@@ -162,7 +162,7 @@ export function ErrorState({ error, retry }: { error: unknown; retry?: () => voi
     <div role="alert" className="rounded-3xl bg-danger-soft px-6 py-8 text-center">
       <p className="font-bold text-danger">Could not load this</p>
       <p className="mt-1 text-sm text-ink/80">{message}</p>
-      {retry && <Button variant="white" size="sm" className="mt-4" onClick={retry}>Try again</Button>}
+      {retry && <Button variant="white" size="sm" className="mt-4" onClick={retry}>Try Again</Button>}
     </div>
   );
 }
@@ -177,10 +177,13 @@ export function Sheet({ open, onClose, title, description, children, footer, siz
     <dialog ref={ref} onClose={onClose} onCancel={onClose} onClick={(e) => { if (e.target === e.currentTarget) onClose(); }} aria-labelledby={`${id}-t`} className={cx('fixed inset-x-0 bottom-0 top-auto m-0 w-full max-w-none overflow-hidden rounded-t-[30px] bg-surface p-0 text-ink shadow-float sm:inset-auto sm:top-1/2 sm:left-1/2 sm:m-0 sm:w-[calc(100%-32px)] sm:-translate-x-1/2 sm:-translate-y-1/2 sm:rounded-[30px]', size === 'lg' ? 'sm:max-w-2xl' : 'sm:max-w-lg')}>
       {open && (
         <div className="flex max-h-[88dvh] flex-col">
-          <div className="mx-auto mt-2.5 h-1.5 w-12 rounded-full bg-line sm:hidden" aria-hidden />
-          <header className="flex items-start justify-between gap-3 px-5 pt-4 pb-2">
-            <div className="min-w-0"><h2 id={`${id}-t`} className="text-lg font-extrabold leading-tight">{title}</h2>{description && <p className="mt-0.5 text-sm text-muted">{description}</p>}</div>
-            <button type="button" onClick={onClose} aria-label="Close" className="-mr-1 flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-soft text-muted hover:text-ink"><X size={18} aria-hidden /></button>
+          {/* Shared dark header (founder rule: every modal carries the black header with title, description and close). */}
+          <header className="bg-ink px-5 pt-3 pb-4 text-white">
+            <div className="mx-auto mb-3 h-1.5 w-12 rounded-full bg-white/30 sm:hidden" aria-hidden />
+            <div className="flex items-start justify-between gap-3">
+              <div className="min-w-0"><h2 id={`${id}-t`} className="text-lg font-extrabold leading-tight">{title}</h2>{description && <p className="mt-0.5 text-sm text-white/75">{description}</p>}</div>
+              <button type="button" onClick={onClose} aria-label="Close" className="-mr-1 flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white/15 text-white hover:bg-white/25"><X size={18} aria-hidden /></button>
+            </div>
           </header>
           <div className="flex-1 overflow-y-auto px-5 py-3 text-sm">{children}</div>
           {footer && <div className="flex shrink-0 flex-col gap-2 border-t border-line px-5 py-4 pb-[max(16px,env(safe-area-inset-bottom))] sm:flex-row sm:justify-end">{footer}</div>}

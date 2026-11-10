@@ -117,6 +117,9 @@ button, [role="button"] { transition: transform 120ms ease, background-color 160
 
 /* Leaflet map container (booking at a location) */
 .leaflet-container { font-family: inherit; border-radius: 22px; }
+/* Zoom buttons: thumb-sized and on the app radius token instead of Leaflet's 30 px / 2 px defaults. */
+.leaflet-touch .leaflet-bar, .leaflet-bar { border-radius: var(--radius-md); overflow: hidden; }
+.leaflet-touch .leaflet-bar a, .leaflet-bar a { width: 44px; height: 44px; line-height: 44px; border-radius: 0; }
 
 /*
  * Session restore without a signed-out flash. app/layout.tsx sets

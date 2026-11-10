@@ -27,7 +27,7 @@ export function Landing() {
           {([['Doctors', '/search?type=doctors'], ['Lab Tests', '/tests'], ['Medicines', '/pharmacy'], ['Emergency', '/emergency']] as [string, string][]).map(([l, h]) => <Link key={h} href={h} className="rounded-full px-4 py-2 text-sm font-semibold text-muted hover:bg-white hover:text-ink">{l}</Link>)}
         </nav>
         <div className="flex shrink-0 items-center gap-1.5 sm:gap-2">
-          <Link href="/login" className="inline-flex h-10 items-center whitespace-nowrap rounded-full border border-line bg-white px-4 text-sm font-semibold text-ink hover:bg-soft sm:border-transparent sm:bg-transparent sm:hover:bg-white">Sign In</Link>
+          <Link href="/login" className="inline-flex h-11 items-center whitespace-nowrap rounded-full border border-line bg-white px-4 text-sm font-semibold text-ink hover:bg-soft sm:border-transparent sm:bg-transparent sm:hover:bg-white">Sign In</Link>
           <Link href="/signup"><Button size="sm">Get Started</Button></Link>
         </div>
       </header>
@@ -44,7 +44,7 @@ export function Landing() {
               <SmartSearch tone="hero" className="mt-5 max-w-xl" placeholder="Try “fever”, “child doctor” or “sugar test”" />
               <div className="mt-6 flex flex-wrap gap-3">
                 <Link href="/signup"><Button variant="white" size="lg">Create Free Account <ArrowRight size={18} /></Button></Link>
-                <Link href="/home"><Button variant="ghost" size="lg" className="text-white hover:bg-white/15 hover:text-white">Explore without signing in</Button></Link>
+                <Link href="/home"><Button variant="ghost" size="lg" className="text-white hover:bg-white/15 hover:text-white">Explore Without Signing In</Button></Link>
               </div>
               {ui.landing.stats.length > 0 && (
                 <dl className="mt-8 grid max-w-md grid-cols-3 gap-3">
@@ -151,7 +151,7 @@ function HeroArt({ imageUrl }: { imageUrl: string | null }) {
         </div>
       )}
       <div className={cx('animate-float absolute -left-2 top-10 rounded-2xl bg-white p-3 text-ink shadow-float', imageUrl && 'left-0')} aria-hidden>
-        <p className="text-[10px] font-semibold text-muted">Next slot</p><p className="text-sm font-extrabold">Today · 10:30 AM</p>
+        <p className="text-[10px] font-semibold text-muted">Next Slot</p><p className="text-sm font-extrabold">Today · 10:30 AM</p>
       </div>
       <div className="animate-float absolute -right-2 top-28 rounded-2xl bg-white p-3 text-ink shadow-float [animation-delay:1.2s]" aria-hidden>
         <p className="flex items-center gap-1 text-sm font-extrabold"><Star size={14} className="fill-sun text-sun" /> 4.8 <span className="text-[10px] font-medium text-muted">(212)</span></p>

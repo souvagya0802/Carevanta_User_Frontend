@@ -145,7 +145,9 @@ function unlockAudioOnFirstGesture() {
 /** Important: a bright chime. Success: a softer good-news chime. Critical: an urgent triple ping. Light: silent. */
 export async function playAlertSound(level: AlertLevel, tone?: AlertTone): Promise<'played' | 'blocked' | 'skipped'> {
   if (level === 'light') return 'skipped';
-  try { navigator.vibrate?.(level === 'critical' ? [300, 120, 300, 120, 300] : [180, 80, 180]); } catch { /* not supported */ }
+  // Browsers block vibration until the person has interacted with the page; asking earlier only logs an error.
+  const active = (navigator as Navigator & { userActivation?: { hasBeenActive: boolean } }).userActivation?.hasBeenActive ?? true;
+  if (active) try { navigator.vibrate?.(level === 'critical' ? [300, 120, 300, 120, 300] : [180, 80, 180]); } catch { /* not supported */ }
   const el = player(tone ?? (level === 'critical' ? 'critical' : 'important'));
   if (!el) return 'skipped';
   el.currentTime = 0;
