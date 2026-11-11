@@ -92,7 +92,8 @@ export function AppShell({ children, hideTop }: { children: ReactNode; hideTop?:
       {/* Phone bottom nav */}
       {/* Five equal columns that can shrink, so the bar never runs past the screen edge, even at 320 px. */}
       <nav aria-label="Quick navigation" className="fixed inset-x-2 bottom-[max(10px,env(safe-area-inset-bottom))] z-40 min-[380px]:inset-x-3 lg:hidden">
-        <div className="glass mx-auto grid max-w-md grid-cols-5 items-end rounded-[28px] px-1 py-1.5 shadow-float">
+        {/* Solid, not see-through: page content scrolling behind the bar made the labels hard to read. */}
+        <div className="mx-auto grid max-w-md border border-line bg-white grid-cols-5 items-end rounded-[28px] px-1 py-1.5 shadow-float">
           {TABS.map((t) => {
             const active = t.match(pathname);
             if (t.emergency) return <Link key={t.href} href={t.href} aria-label="Emergency" className="pulse-ring relative -mt-6 flex h-14 w-14 flex-col items-center justify-center justify-self-center rounded-full bg-danger text-white shadow-[0_16px_34px_-12px_rgb(225_29_72/0.75)] min-[380px]:h-16 min-[380px]:w-16"><Siren size={22} aria-hidden /><span className="text-[10px] font-bold">SOS</span></Link>;
