@@ -1,0 +1,11 @@
+# Keep the build context small and free of local state and secrets.
+node_modules
+.next
+.git
+.env*
+!.env.example
+npm-debug.log*
+coverage
+*.tsbuildinfo
+Dockerfile
+.dockerignore

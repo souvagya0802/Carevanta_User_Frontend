@@ -3,6 +3,8 @@ import type { NextConfig } from 'next';
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
+  // Docker: build a small self-contained server (.next/standalone) instead of shipping all of node_modules.
+  output: 'standalone',
   // The floating Next.js dev badge sits on top of the bottom navigation on phones; hide it.
   devIndicators: false,
   async headers() {
