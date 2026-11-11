@@ -1,0 +1,101 @@
+# Deploy the Carevanta patient app to staging.
+#
+# Trigger: a push to the `staging` branch, or a manual run. Production (from `main`) is not wired yet.
+#
+#   checks  → install, typecheck, lint, unit tests and a production build (proves the code builds before
+#             anything touches the server).
+#   deploy  → SSH to the VPS as the non-root `deploy` user and run /opt/carevanta/deploy.sh app.
+#             The image is built on the VPS: the script fetches `staging`, resets to origin/staging, records
+#             the previous commit for rollback, runs `docker compose build app`, recreates the container,
+#             waits for it to be healthy and exits non-zero on failure. It holds a lock so two builds never
+#             overlap. Then the workflow checks https://staging-app.carevanta.tech from the internet.
+#
+# Secrets live in the GitHub environment `staging`: VPS_HOST, VPS_USER, VPS_SSH_KEY, VPS_KNOWN_HOSTS
+# (VPS_KNOWN_HOSTS is the server's known_hosts line, checked by hand, so the host key is verified strictly).
+# The app's public settings (NEXT_PUBLIC_*) are build arguments in /opt/carevanta/docker-compose.yml on the
+# server; nothing secret is needed here.
+name: deploy
+
+on:
+  push:
+    branches: [staging]
+  workflow_dispatch:
+
+# One deploy at a time per branch; a newer push waits instead of cancelling a deploy half-way.
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+env:
+  APP_URL: https://staging-app.carevanta.tech
+
+jobs:
+  checks:
+    name: Checks
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - name: Install
+        run: npm ci
+      - name: Typecheck
+        run: npm run typecheck
+      - name: Lint
+        run: npm run lint
+      - name: Unit tests
+        run: npm test
+      - name: Production build
+        env:
+          NEXT_PUBLIC_API_URL: https://staging-api.carevanta.tech
+          NEXT_TELEMETRY_DISABLED: 1
+        run: npm run build
+
+  deploy:
+    name: Deploy to staging
+    needs: checks
+    runs-on: ubuntu-latest
+    # Building the image on the VPS takes a few minutes; the script's own health wait is included.
+    timeout-minutes: 25
+    environment:
+      name: staging
+      url: https://staging-app.carevanta.tech
+    steps:
+      - name: Prepare SSH (strict host key checking)
+        env:
+          VPS_SSH_KEY: ${{ secrets.VPS_SSH_KEY }}
+          VPS_KNOWN_HOSTS: ${{ secrets.VPS_KNOWN_HOSTS }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$VPS_SSH_KEY" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          printf '%s\n' "$VPS_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 644 ~/.ssh/known_hosts
+      - name: Run deploy.sh on the VPS (build and recreate app)
+        env:
+          VPS_HOST: ${{ secrets.VPS_HOST }}
+          VPS_USER: ${{ secrets.VPS_USER }}
+        run: |
+          ssh -i ~/.ssh/deploy_key \
+            -o StrictHostKeyChecking=yes -o UserKnownHostsFile="$HOME/.ssh/known_hosts" \
+            -o BatchMode=yes -o ConnectTimeout=20 -o ServerAliveInterval=15 -o ServerAliveCountMax=8 \
+            "$VPS_USER@$VPS_HOST" "/opt/carevanta/deploy.sh app"
+      - name: Health gate (up to 2 minutes)
+        run: |
+          for i in $(seq 1 24); do
+            code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 5 "$APP_URL" || true)
+            echo "attempt $i: $code"
+            if [ "$code" = "200" ]; then exit 0; fi
+            sleep 5
+          done
+          echo "::error::$APP_URL did not return 200 within 2 minutes. deploy.sh recorded the previous commit on the VPS for rollback."
+          exit 1
+      - name: Remove the key
+        if: always()
+        run: rm -f ~/.ssh/deploy_key
