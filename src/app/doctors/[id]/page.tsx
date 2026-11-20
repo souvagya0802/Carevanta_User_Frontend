@@ -9,7 +9,8 @@ import { useLocation } from '@/lib/location';
 import { directionsUrl, distanceKm } from '@/lib/geo';
 import { money, nowMs, relative, slotLabel } from '@/lib/format';
 import { AppShell } from '@/components/layout/app-shell';
-import { Avatar, Badge, Button, Card, ErrorState, InfoTile, Rating, SectionTitle, Skeleton } from '@/components/ui/primitives';
+import { HorizontalScroller } from '@/components/ui/horizontal-scroller';
+import { Avatar, Button, Card, ErrorState, InfoTile, Rating, SectionTitle, Skeleton } from '@/components/ui/primitives';
 
 export interface DoctorProfile {
   id: string; type: string; name: string; description: string | null; rating: { average: number | null; count: number };
@@ -50,7 +51,7 @@ export default function DoctorPage() {
                 <div className="min-w-0 flex-1">
                   <h1 className="text-2xl font-extrabold leading-tight">{d.name}</h1>
                   <p className="mt-1 text-sm text-white/85">{primary?.name ?? 'Doctor'}{d.doctor.specialities.length > 1 ? ` · +${d.doctor.specialities.length - 1} more` : ''}</p>
-                  <div className="mt-2 flex flex-wrap items-center gap-2">{d.doctor.registrationVerified && <Badge tone="white"><BadgeCheck size={11} className="mr-1 inline" aria-hidden />Registration verified</Badge>}<span className="inline-flex items-center gap-1 text-sm font-bold"><Star size={14} className="fill-sun text-sun" aria-hidden /> {d.rating.average?.toFixed(1) ?? 'New'}{d.rating.count ? <span className="text-xs font-normal text-white/75">({d.rating.count})</span> : null}</span></div>
+                  <div className="mt-2 flex flex-wrap items-center gap-2">{d.doctor.registrationVerified && <span className="inline-flex items-center rounded-[5px] bg-green-dark px-2 py-0.5 text-[11px] font-bold tracking-wide text-white uppercase"><BadgeCheck size={11} className="mr-1" aria-hidden />Registration Verified</span>}<span className="inline-flex items-center gap-1 text-sm font-bold"><Star size={14} className="fill-sun text-sun" aria-hidden /> {d.rating.average?.toFixed(1) ?? 'New'}{d.rating.count ? <span className="text-xs font-normal text-white/75">({d.rating.count})</span> : null}</span></div>
                 </div>
               </div>
               <div className="mt-5 grid grid-cols-3 gap-2">
@@ -62,7 +63,7 @@ export default function DoctorPage() {
           </section>
 
           <div className="grid gap-5 lg:grid-cols-[1fr_360px]">
-            <div className="space-y-5">
+            <div className="min-w-0 space-y-5">
               {d.doctor.bio && <Card><p className="text-sm text-ink/90">{d.doctor.bio}</p></Card>}
               <section>
                 <SectionTitle title="Where to See This Doctor" />
@@ -86,7 +87,7 @@ export default function DoctorPage() {
               <section>
                 <SectionTitle title="What Patients Say" />
                 {reviews.isPending ? <Skeleton rows={2} /> : !reviews.data?.length ? <p className="text-sm text-muted">No published reviews yet. Reviews appear after a completed visit and moderation.</p> : (
-                  <div className="stagger grid gap-2">{reviews.data.map((r) => <Card key={r.id}><div className="flex items-center justify-between"><Rating value={r.rating} /><span className="text-xs text-muted">{r.author} · {relative(r.createdAt)}</span></div>{r.comment && <p className="mt-1.5 text-sm">{r.comment}</p>}</Card>)}</div>
+                  <HorizontalScroller label="What Patients Say" itemClassName={reviews.data.length > 1 ? 'w-[85%] sm:w-[48%]' : 'w-full'} gridClassName="md:grid-cols-2">{reviews.data.map((r) => <Card key={r.id} className="h-full"><div className="flex items-center justify-between"><Rating value={r.rating} /><span className="text-xs text-muted">{r.author} · {relative(r.createdAt)}</span></div>{r.comment && <p className="mt-1.5 text-sm">{r.comment}</p>}</Card>)}</HorizontalScroller>
                 )}
               </section>
             </div>
@@ -103,11 +104,12 @@ export default function DoctorPage() {
 
 function BookCard({ id, next, compact }: { id: string; next: string | null; compact?: boolean }) {
   const label = next ? `Next slot ${slotLabel(next, nowMs())}` : 'No open slots right now';
-  if (compact) return <Link href={`/book/${id}`} className="flex items-center gap-3 rounded-full bg-brand p-1.5 pl-5 text-white shadow-float"><span className="min-w-0 flex-1 leading-tight">{next ? <><span className="block text-[10px] font-semibold text-white/80">Next Slot</span><span className="block truncate text-xs font-bold">{slotLabel(next, nowMs())}</span></> : <span className="block truncate text-xs font-semibold">{label}</span>}</span><span className="flex h-11 items-center gap-2 rounded-full bg-white px-5 text-sm font-extrabold text-primary"><CalendarCheck size={16} aria-hidden /> Book</span></Link>;
+  if (compact) return <Link href={`/book/${id}`} className="flex items-center gap-3 rounded-full bg-brand p-1.5 pl-5 text-white shadow-float"><span className="min-w-0 flex-1 leading-tight">{next ? <><span className="flex items-center gap-1 text-[10px] font-semibold text-white/80"><span className="h-1.5 w-1.5 rounded-full bg-green" aria-hidden />Next Slot</span><span className="block truncate text-xs font-bold">{slotLabel(next, nowMs())}</span></> : <span className="block truncate text-xs font-semibold">{label}</span>}</span><span className="flex h-11 items-center gap-2 rounded-full bg-white px-5 text-sm font-extrabold text-primary"><CalendarCheck size={16} aria-hidden /> Book</span></Link>;
   return (
     <div className="card-3d sticky top-24 rounded-3xl p-5">
       <p className="text-sm font-extrabold">Book an Appointment</p>
-      <p className="mt-1 text-xs text-muted">{label}. Pick the place, day and time; pay online or at the counter.</p>
+      {next && <p className="mt-2 inline-flex items-center gap-1.5 rounded-[5px] bg-green-soft px-2 py-1 text-xs font-bold text-green-ink"><span className="h-1.5 w-1.5 rounded-full bg-green" aria-hidden />{label}</p>}
+      <p className="mt-1 text-xs text-muted">{next ? '' : `${label}. `}Pick the place, day and time; pay online or at the counter.</p>
       <Link href={`/book/${id}`}><Button full size="lg" className="mt-4"><CalendarCheck size={18} /> Choose a Slot</Button></Link>
     </div>
   );

@@ -48,7 +48,7 @@ export default function CarePage() {
           )}
         </section>
         <section className="mt-6">
-          <div className="mb-3 flex items-center justify-between"><h2 className="text-lg font-extrabold">Recent Orders</h2><Link href="/orders" className="text-sm font-semibold text-primary">All Orders</Link></div>
+          <div className="mb-3 flex items-center justify-between"><h2 className="text-lg font-extrabold">Recent Orders</h2><Link href="/orders" className="-mr-2 inline-flex h-11 items-center rounded-[5px] px-2 text-sm font-semibold text-primary">All Orders</Link></div>
           {labs.isPending || rx.isPending ? <Skeleton card rows={2} /> : (
             <div className="stagger grid gap-2 lg:grid-cols-2">
               {(labs.data ?? []).slice(0, 3).map((o) => <Card key={o.id} href={`/orders/lab/${o.id}`} className="flex items-center gap-3"><span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-violet-soft text-violet"><FlaskConical size={20} /></span><span className="min-w-0 flex-1"><span className="block truncate text-sm font-extrabold">{o.items.map((i) => i.serviceName).join(', ')}</span><span className="block truncate text-xs text-muted">{o.provider.displayName} · {o.reference}</span></span><StatusBadge status={o.status} /><ChevronRight size={16} className="text-muted" /></Card>)}

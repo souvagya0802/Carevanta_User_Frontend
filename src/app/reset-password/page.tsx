@@ -35,7 +35,7 @@ function ResetInner() {
       <form onSubmit={submit} className="space-y-4" noValidate>
         <Field label="Reset Code" required><Input value={token} onChange={(e) => setToken(e.target.value)} autoComplete="one-time-code" className="font-mono" autoFocus={!token} /></Field>
         <Field label="New Password" required><PasswordInput autoComplete="new-password" value={password} onChange={(e) => setPassword(e.target.value)} autoFocus={!!token} /></Field>
-        <ul className="grid grid-cols-1 gap-1 text-xs sm:grid-cols-3">{checks.map((c) => <li key={c.label} className={cx('flex items-center gap-1', c.ok ? 'text-success' : 'text-muted')}><CheckCircle2 size={14} aria-hidden /> {c.label}</li>)}</ul>
+        <ul className="grid grid-cols-1 gap-1 text-xs sm:grid-cols-3">{checks.map((c) => <li key={c.label} className={cx('flex items-center gap-1', c.ok ? 'text-green-ink' : 'text-muted')}><CheckCircle2 size={14} aria-hidden /> {c.label}</li>)}</ul>
         <Field label="Repeat Password" required error={confirm && confirm !== password ? 'Passwords do not match' : undefined}><PasswordInput autoComplete="new-password" value={confirm} onChange={(e) => setConfirm(e.target.value)} /></Field>
         {error && <p role="alert" className="rounded-2xl bg-danger-soft px-3 py-2 text-sm font-medium text-danger">{error}</p>}
         <Button type="submit" full size="lg" loading={busy} disabled={!ready}>Set Password</Button>

@@ -82,7 +82,7 @@ function BookInner() {
 
         {done ? (
           <Card className="animate-scale-in text-center">
-            <span className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-success-soft text-success"><CheckCircle2 size={34} aria-hidden /></span>
+            <span className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-success-soft text-green-ink"><CheckCircle2 size={34} aria-hidden /></span>
             <h2 className="mt-3 text-xl font-extrabold">{done.status === 'CONFIRMED' ? 'You are booked' : 'Request sent'}</h2>
             <p className="mt-1 text-sm text-muted">Reference <span className="font-mono font-semibold text-ink">{done.reference}</span>. {done.status === 'CONFIRMED' ? 'A confirmation is on its way.' : 'The clinic confirms shortly; you will be notified.'}</p>
             {chosen && <p className="mt-2 text-sm font-semibold">{dayLabel(activeDay)} · {time(chosen.startsAt)} · {chosen.locationName}</p>}

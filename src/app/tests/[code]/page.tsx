@@ -93,7 +93,7 @@ function TestInner() {
 
         {done ? (
           <Card className="animate-scale-in text-center">
-            <span className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-success-soft text-success"><CheckCircle2 size={34} aria-hidden /></span>
+            <span className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-success-soft text-green-ink"><CheckCircle2 size={34} aria-hidden /></span>
             <h2 className="mt-3 text-xl font-extrabold">{isImaging ? 'Scan booked' : 'Test booked'}</h2>
             <p className="mt-1 text-sm text-muted">Reference <span className="font-mono font-semibold text-ink">{done.reference}</span>. {mode === 'HOME_COLLECTION' ? 'The lab will confirm the collection time at your PIN code.' : `The ${isImaging ? 'centre' : 'lab'} will confirm your visit time.`} Your report appears under My Care when published.</p>
             <div className="mt-5 grid gap-2"><Link href={`/orders/lab/${done.id}`}><Button full>View Order</Button></Link><Link href="/tests"><Button full variant="ghost">Book Another Test</Button></Link></div>

@@ -33,14 +33,14 @@ export default function AccountPage() {
             <Avatar name={me.fullName} size="lg" />
             <span className="min-w-0 flex-1"><span className="block truncate text-lg font-extrabold">{me.fullName}</span><span className="tnum block truncate text-sm text-muted">{me.phone ? phone(me.phone) : me.email}</span>{me.email && me.phone && <span className="block truncate text-xs text-muted">{me.email}</span>}</span>
             {isVerified(me)
-              ? <span className="flex shrink-0 items-center gap-1 rounded-full bg-success-soft px-2.5 py-1 text-xs font-bold text-success"><ShieldCheck size={12} aria-hidden /> Verified</span>
+              ? <span className="flex shrink-0 items-center gap-1 rounded-full bg-success-soft px-2.5 py-1 text-xs font-bold text-green-ink"><ShieldCheck size={12} aria-hidden /> Verified</span>
               : <Link href="/verify?next=/account" className="flex h-11 shrink-0 items-center gap-1 rounded-full bg-warning-soft px-3 text-xs font-bold text-warning"><ShieldAlert size={14} aria-hidden /> Verify Now</Link>}
           </Card>
         )}
 
         <div className="stagger mt-4 grid gap-2 lg:grid-cols-2">
           <Row href="/family" icon={Users} title="Family Profiles" text="People you book for" />
-          <Row href="/records" icon={FileText} title="Health Records" text="Reports and prescriptions" />
+          <Row href="/records" icon={FileText} tone="green" title="Health Records" text="Reports and prescriptions" />
           <PushRow />
           <InstallRow />
           <button type="button" onClick={() => setChanging(true)} className="card-3d flex w-full items-center gap-3 rounded-3xl p-4 text-left"><span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary-soft text-primary"><KeyRound size={20} /></span><span className="min-w-0 flex-1"><span className="block text-sm font-extrabold">Change Password</span><span className="block text-xs text-muted">At least 12 characters</span></span><ChevronRight size={16} className="text-muted" /></button>
@@ -66,8 +66,8 @@ export default function AccountPage() {
   );
 }
 
-function Row({ href, icon: Icon, title, text }: { href: string; icon: typeof Users; title: string; text: string }) {
-  return <Link href={href} className="card-3d flex items-center gap-3 rounded-3xl p-4"><span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary-soft text-primary"><Icon size={20} /></span><span className="min-w-0 flex-1"><span className="block text-sm font-extrabold">{title}</span><span className="block text-xs text-muted">{text}</span></span><ChevronRight size={16} className="text-muted" /></Link>;
+function Row({ href, icon: Icon, title, text, tone }: { href: string; icon: typeof Users; title: string; text: string; tone?: 'green' }) {
+  return <Link href={href} className="card-3d flex items-center gap-3 rounded-3xl p-4"><span className={`flex h-11 w-11 items-center justify-center rounded-2xl ${tone === 'green' ? 'bg-green-soft text-green-ink' : 'bg-primary-soft text-primary'}`}><Icon size={20} /></span><span className="min-w-0 flex-1"><span className="block text-sm font-extrabold">{title}</span><span className="block text-xs text-muted">{text}</span></span><ChevronRight size={16} className="text-muted" /></Link>;
 }
 
 /** Push notifications toggle; reads the browser state once on mount. */
@@ -91,7 +91,7 @@ export function PushRow() {
   const disabled = state === 'loading' || state === 'unsupported' || state === 'blocked' || state === 'unavailable';
   return (
     <button type="button" onClick={() => void toggle()} disabled={disabled || busy} className="card-3d flex w-full items-center gap-3 rounded-3xl p-4 text-left disabled:opacity-70">
-      <span className={`flex h-11 w-11 items-center justify-center rounded-2xl ${state === 'on' ? 'bg-success-soft text-success' : 'bg-primary-soft text-primary'}`}>{state === 'on' ? <Bell size={20} /> : <BellOff size={20} />}</span>
+      <span className={`flex h-11 w-11 items-center justify-center rounded-2xl ${state === 'on' ? 'bg-success-soft text-green-ink' : 'bg-primary-soft text-primary'}`}>{state === 'on' ? <Bell size={20} /> : <BellOff size={20} />}</span>
       <span className="min-w-0 flex-1"><span className="block text-sm font-extrabold">Push Notifications</span><span className="block text-xs text-muted">{copy[state]}</span></span>
       <span className={`relative h-7 w-12 rounded-full transition ${state === 'on' ? 'bg-success' : 'bg-line'}`} aria-hidden><span className={`absolute top-0.5 h-6 w-6 rounded-full bg-white shadow transition ${state === 'on' ? 'left-[22px]' : 'left-0.5'}`} /></span>
     </button>
@@ -110,11 +110,11 @@ export function InstallRow() {
     window.addEventListener('appinstalled', onInstalled);
     return () => { window.removeEventListener('beforeinstallprompt', onPrompt); window.removeEventListener('appinstalled', onInstalled); };
   }, []);
-  if (installed) return <div className="card-3d flex items-center gap-3 rounded-3xl p-4"><span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-success-soft text-success"><Download size={20} /></span><span className="min-w-0 flex-1"><span className="block text-sm font-extrabold">App installed</span><span className="block text-xs text-muted">You are using the installed app</span></span></div>;
+  if (installed) return <div className="card-3d flex items-center gap-3 rounded-3xl p-4"><span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-success-soft text-green-ink"><Download size={20} /></span><span className="min-w-0 flex-1"><span className="block text-sm font-extrabold">App installed</span><span className="block text-xs text-muted">You are using the installed app</span></span></div>;
   const install = async () => { if (!prompt) return setShowHelp(true); await prompt.prompt(); const { outcome } = await prompt.userChoice; if (outcome === 'accepted') setInstalled(true); setPrompt(null); };
   return (
     <>
-      <button type="button" onClick={() => void install()} className="card-3d flex w-full items-center gap-3 rounded-3xl p-4 text-left"><span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-success-soft text-success"><Download size={20} /></span><span className="min-w-0 flex-1"><span className="block text-sm font-extrabold">Install the App</span><span className="block text-xs text-muted">Add Carevanta to your home screen. Works offline for your bookings.</span></span><ChevronRight size={16} className="text-muted" /></button>
+      <button type="button" onClick={() => void install()} className="card-3d flex w-full items-center gap-3 rounded-3xl p-4 text-left"><span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-success-soft text-green-ink"><Download size={20} /></span><span className="min-w-0 flex-1"><span className="block text-sm font-extrabold">Install the App</span><span className="block text-xs text-muted">Add Carevanta to your home screen. Works offline for your bookings.</span></span><ChevronRight size={16} className="text-muted" /></button>
       <Sheet open={showHelp} onClose={() => setShowHelp(false)} title="Add to Home Screen">
         <ol className="list-decimal space-y-2 pl-5 text-sm">
           <li>On iPhone: tap the <Share2 size={14} className="inline" /> Share button in Safari, then <b>Add to Home Screen</b>.</li>

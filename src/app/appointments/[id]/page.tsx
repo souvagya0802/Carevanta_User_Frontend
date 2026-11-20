@@ -92,7 +92,7 @@ export default function AppointmentPage() {
                 {canCancel && <Button variant="secondary" onClick={() => setMoving(true)}><CalendarClock size={16} /> Reschedule</Button>}
                 {canCancel && <Button variant="ghost" className="text-danger" onClick={() => setCancelling(true)}><XCircle size={16} /> Cancel</Button>}
                 {canReview && <Button variant="soft" onClick={() => setReviewing(true)}><Star size={16} /> Rate This Visit</Button>}
-                {a.status === 'COMPLETED' && reviewed && <p className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-success-soft px-5 text-sm font-semibold text-success"><Star size={16} className="fill-success" aria-hidden /> You reviewed this visit</p>}
+                {a.status === 'COMPLETED' && reviewed && <p className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-success-soft px-5 text-sm font-semibold text-green-ink"><Star size={16} className="fill-success" aria-hidden /> You reviewed this visit</p>}
               </div>
               {a.transaction?.status === 'PAY_AT_PROVIDER' && <p className="text-xs text-muted">You chose to pay at the counter. Carry the reference above.</p>}
             </>

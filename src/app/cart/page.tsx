@@ -12,6 +12,7 @@ import { useAction, useGet } from '@/lib/hooks';
 import { medicineLabel, money } from '@/lib/format';
 import { AppShell, RequireSignIn } from '@/components/layout/app-shell';
 import { PrescriptionPicker, usePrescriptions } from '@/components/prescriptions';
+import { MedicineImage } from '@/components/medicine/medicine-ui';
 import type { ProviderProfile } from '@/app/providers/[id]/page';
 import { Badge, Button, Card, EmptyState, Field, Input, OptionCard, PageTitle, Skeleton } from '@/components/ui/primitives';
 import { useToast } from '@/components/ui/toast';
@@ -74,6 +75,7 @@ export default function CartPage() {
               <ul className="divide-y divide-line">
                 {cart.cart.lines.map((l) => (
                   <li key={l.medicineId} className="flex items-center gap-2 p-3 min-[380px]:gap-3 min-[380px]:p-4">
+                    <Link href={`/medicines/${l.medicineId}`} aria-label={`About ${l.name}`} className="shrink-0"><MedicineImage imageUrl={l.imageUrl} name={l.name} dosageForm={l.dosageForm} size="xs" /></Link>
                     <span className="min-w-0 flex-1"><span className="block truncate text-sm font-extrabold">{medicineLabel(l.name, l.strength)}</span><span className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-xs text-muted"><span>{l.packSize ? `Pack of ${l.packSize} · ` : ''}{money(l.unitPriceMinor)} each</span>{l.requiresPrescription && <Badge tone="violet">Rx</Badge>}</span></span>
                     <span className="flex shrink-0 items-center gap-1 rounded-full bg-soft p-0.5"><button type="button" aria-label={l.quantity === 1 ? `Remove ${l.name}` : `One less ${l.name}`} onClick={() => cart.setQuantity(l.medicineId, l.quantity - 1)} className="flex h-11 w-11 items-center justify-center rounded-full bg-white shadow-card">{l.quantity === 1 ? <Trash2 size={14} className="text-danger" /> : <Minus size={14} />}</button><span className="tnum w-6 text-center text-sm font-bold">{l.quantity}</span><button type="button" aria-label={`One more ${l.name}`} onClick={() => cart.setQuantity(l.medicineId, l.quantity + 1)} className="flex h-11 w-11 items-center justify-center rounded-full bg-white shadow-card"><Plus size={14} /></button></span>
                     <span className="tnum hidden w-20 text-right text-sm font-extrabold min-[380px]:block">{money(l.unitPriceMinor * l.quantity)}</span>

@@ -31,7 +31,7 @@ export function describeError(err: unknown, fallback = 'Something went wrong'): 
 
 const STYLE: Record<Kind, { bar: string; icon: ReactNode }> = {
   error: { bar: 'border-l-danger', icon: <AlertCircle size={18} className="text-danger" aria-hidden /> },
-  success: { bar: 'border-l-success', icon: <CheckCircle2 size={18} className="text-success" aria-hidden /> },
+  success: { bar: 'border-l-success', icon: <CheckCircle2 size={18} className="text-green-dark" aria-hidden /> },
   info: { bar: 'border-l-primary', icon: <Info size={18} className="text-primary" aria-hidden /> },
 };
 

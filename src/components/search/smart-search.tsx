@@ -205,7 +205,7 @@ export function SmartSearch({ initial = '', placeholder, onSearch, tone = 'light
               </Section>
               <Section title="Hospitals, Labs & Pharmacies" show={d.places.length > 0}>
                 {d.places.slice(0, 3).map((x) => (
-                  <Row key={x.id} active={isActive(`p-${x.id}`)} onClick={() => go(`/providers/${x.id}`, x.name)} icon={<span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-success-soft text-success"><Hospital size={18} /></span>}
+                  <Row key={x.id} active={isActive(`p-${x.id}`)} onClick={() => go(`/providers/${x.id}`, x.name)} icon={<span className="flex h-10 w-10 items-center justify-center rounded-2xl bg-success-soft text-green-ink"><Hospital size={18} /></span>}
                     title={x.name} sub={[PLACE_LABEL[x.type] ?? x.type, x.distanceKm != null ? `${x.distanceKm} km` : x.city].filter(Boolean).join(' · ')} />
                 ))}
               </Section>

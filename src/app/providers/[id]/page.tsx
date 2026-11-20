@@ -10,6 +10,7 @@ import { directionsUrl, distanceKm } from '@/lib/geo';
 import { money, relative } from '@/lib/format';
 import { TYPE_COLOUR, TYPE_LABEL } from '@/components/icons';
 import { AppShell } from '@/components/layout/app-shell';
+import { HorizontalScroller } from '@/components/ui/horizontal-scroller';
 import { Avatar, Badge, Button, Card, ErrorState, InfoTile, Rating, SectionTitle, Skeleton } from '@/components/ui/primitives';
 
 export interface ProviderProfile {
@@ -26,6 +27,8 @@ export interface ProviderProfile {
 // Leaflet needs the browser, so the map loads on the client only.
 const MapView = dynamic(() => import('@/components/map/map-view').then((m) => m.MapView), { ssr: false, loading: () => <div className="shimmer h-56 rounded-[22px]" /> });
 const DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+/** Long lists of tests or services swipe a page of four rows at a time on phones, so the page does not become one tall stack. */
+const pages = <T,>(xs: T[], n: number) => Array.from({ length: Math.ceil(xs.length / n) }, (_, i) => xs.slice(i * n, i * n + n));
 const hm = (m: number) => `${String(Math.floor(m / 60)).padStart(2, '0')}:${String(m % 60).padStart(2, '0')}`;
 
 export default function ProviderPage() {
@@ -55,7 +58,7 @@ export default function ProviderPage() {
                   <Badge tone="white">{TYPE_LABEL[p.type] ?? p.type}</Badge>
                   <h1 className="mt-1 text-2xl font-extrabold leading-tight">{p.name}</h1>
                   <p className="mt-1 flex items-center gap-1 text-sm text-white/85"><MapPin size={14} aria-hidden />{primary ? `${primary.locality ?? primary.city}, ${primary.district}` : ''}</p>
-                  <div className="mt-2 flex flex-wrap items-center gap-2"><Badge tone="white"><BadgeCheck size={11} className="mr-1 inline" aria-hidden />Verified</Badge><span className="inline-flex items-center gap-1 text-sm font-bold"><Star size={14} className="fill-sun text-sun" aria-hidden /> {p.rating.average?.toFixed(1) ?? 'New'}{p.rating.count ? <span className="text-xs font-normal text-white/75">({p.rating.count})</span> : null}</span></div>
+                  <div className="mt-2 flex flex-wrap items-center gap-2"><span className="inline-flex items-center rounded-[5px] bg-green-dark px-2 py-0.5 text-[11px] font-bold tracking-wide text-white uppercase"><BadgeCheck size={11} className="mr-1" aria-hidden />Verified</span><span className="inline-flex items-center gap-1 text-sm font-bold"><Star size={14} className="fill-sun text-sun" aria-hidden /> {p.rating.average?.toFixed(1) ?? 'New'}{p.rating.count ? <span className="text-xs font-normal text-white/75">({p.rating.count})</span> : null}</span></div>
                 </div>
               </div>
               <div className="mt-5 grid grid-cols-3 gap-2">
@@ -74,30 +77,30 @@ export default function ProviderPage() {
           {p.doctors.length > 0 && (
             <section>
               <SectionTitle title="Doctors Here" />
-              <div className="stagger grid gap-2 lg:grid-cols-2">
+              <HorizontalScroller label={`Doctors at ${p.name}`} itemClassName={p.doctors.length > 1 ? 'w-[85%] sm:w-[48%]' : 'w-full'} gridClassName="md:grid-cols-2" dots={p.doctors.length <= 10}>
                 {p.doctors.map((d) => (
-                  <Card key={d.id} href={`/doctors/${d.id}`} className="flex items-center gap-3">
+                  <Card key={d.id} href={`/doctors/${d.id}`} className="flex h-full items-center gap-3">
                     <Avatar name={d.name} />
                     <span className="min-w-0 flex-1"><span className="block truncate text-sm font-extrabold">{d.name}</span><span className="block truncate text-xs text-muted">{d.speciality ?? 'Doctor'}{d.department ? ` · ${d.department}` : ''}{d.yearsOfExperience != null ? ` · ${d.yearsOfExperience} yrs` : ''}</span><Rating value={d.rating} count={d.ratingCount} /></span>
                     <span className="tnum text-sm font-extrabold">{money(d.feeMinor)}</span>
                   </Card>
                 ))}
-              </div>
+              </HorizontalScroller>
             </section>
           )}
 
           {p.services.length > 0 && (
             <section>
-              <SectionTitle title={isLab ? 'Tests and Scans' : 'Services and prices'} />
-              <div className="stagger grid gap-2 lg:grid-cols-2">
-                {p.services.map((s) => (
+              <SectionTitle title={isLab ? 'Tests and Scans' : 'Services and Prices'} />
+              <HorizontalScroller label={isLab ? 'Tests and Scans' : 'Services and Prices'} itemClassName={p.services.length > 4 ? 'w-[88%] sm:w-[60%]' : 'w-full'} gridClassName="md:grid-cols-2">
+                {pages(p.services, 4).map((page, pi) => <div key={pi} className="grid gap-2">{page.map((s) => (
                   <Card key={s.id} href={isLab || s.category === 'DIAGNOSTIC_TEST' || s.category === 'IMAGING' ? `/tests/${encodeURIComponent(s.code)}?provider=${p.id}` : undefined} className="flex items-center gap-3">
-                    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-violet-soft text-violet"><FlaskConical size={20} aria-hidden /></span>
-                    <span className="min-w-0 flex-1"><span className="block truncate text-sm font-bold">{s.name}</span><span className="block truncate text-xs text-muted">{s.fastingRequired ? 'Fasting required · ' : ''}{s.turnaroundHours ? `Report in ${s.turnaroundHours} h` : s.category.toLowerCase().replace('_', ' ')}{s.homeServiceAvailable ? ' · home collection' : ''}</span></span>
+                    <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-green-soft text-green-ink"><FlaskConical size={20} aria-hidden /></span>
+                    <span className="min-w-0 flex-1"><span className="line-clamp-2 text-sm font-bold leading-5">{s.name}</span><span className="block truncate text-xs text-muted">{s.fastingRequired ? 'Fasting required · ' : ''}{s.turnaroundHours ? `Report in ${s.turnaroundHours} h` : s.category.toLowerCase().replace('_', ' ')}{s.homeServiceAvailable && <> · <span className="font-semibold text-green-ink">Home Collection</span></>}</span></span>
                     <span className="tnum text-sm font-extrabold">{money(s.priceMinor)}</span>
                   </Card>
-                ))}
-              </div>
+                ))}</div>)}
+              </HorizontalScroller>
             </section>
           )}
 
@@ -113,9 +116,9 @@ export default function ProviderPage() {
             {p.locations.some((l) => l.latitude != null && l.longitude != null) && (
               <MapView className="mb-3 h-56 lg:h-72" you={place} markers={p.locations.flatMap((l) => (l.latitude != null && l.longitude != null ? [{ id: l.id, lat: l.latitude, lng: l.longitude, title: l.name, colour: TYPE_COLOUR[p.type] }] : []))} label={`Map of ${p.name}`} />
             )}
-            <div className="grid gap-2 lg:grid-cols-2">
+            <HorizontalScroller label={`Locations of ${p.name}`} itemClassName={p.locations.length > 1 ? 'w-[88%] sm:w-[60%]' : 'w-full'} gridClassName="md:grid-cols-2">
               {p.locations.map((l) => (
-                <Card key={l.id}>
+                <Card key={l.id} className="h-full">
                   <p className="flex items-baseline justify-between gap-2 text-sm font-extrabold"><span>{l.name}</span>{place && l.latitude != null && l.longitude != null && <span className="tnum shrink-0 text-xs font-bold text-primary">{distanceKm(place, { lat: l.latitude, lng: l.longitude }).toFixed(1)} km away</span>}</p>
                   <p className="mt-0.5 text-xs text-muted">{l.addressLine1}{l.addressLine2 ? `, ${l.addressLine2}` : ''}, {l.locality ? `${l.locality}, ` : ''}{l.city}, {l.district} {l.pincode}</p>
                   <ul className="mt-2 grid grid-cols-2 gap-x-4 text-xs">{[1, 2, 3, 4, 5, 6, 0].map((d) => { const hs = l.operatingHours.filter((h) => h.dayOfWeek === d && !h.isClosed); return <li key={d} className="flex justify-between gap-2"><span className={d === today ? 'font-bold text-ink' : 'text-muted'}>{DAYS[d]}</span><span className="tnum">{hs.length ? hs.map((h) => `${hm(h.opensAtMin)}–${hm(h.closesAtMin)}`).join(', ') : 'Closed'}</span></li>; })}</ul>
@@ -125,12 +128,12 @@ export default function ProviderPage() {
                   </div>
                 </Card>
               ))}
-            </div>
+            </HorizontalScroller>
           </section>
 
           <section>
             <SectionTitle title="What Patients Say" />
-            {reviews.isPending ? <Skeleton rows={2} /> : !reviews.data?.length ? <p className="text-sm text-muted">No published reviews yet.</p> : <div className="stagger grid gap-2 lg:grid-cols-2">{reviews.data.map((r) => <Card key={r.id}><div className="flex items-center justify-between"><Rating value={r.rating} /><span className="text-xs text-muted">{r.author} · {relative(r.createdAt)}</span></div>{r.comment && <p className="mt-1.5 text-sm">{r.comment}</p>}</Card>)}</div>}
+            {reviews.isPending ? <Skeleton rows={2} /> : !reviews.data?.length ? <p className="text-sm text-muted">No published reviews yet.</p> : <HorizontalScroller label="What Patients Say" itemClassName={reviews.data.length > 1 ? 'w-[85%] sm:w-[48%]' : 'w-full'} gridClassName="md:grid-cols-2">{reviews.data.map((r) => <Card key={r.id} className="h-full"><div className="flex items-center justify-between"><Rating value={r.rating} /><span className="text-xs text-muted">{r.author} · {relative(r.createdAt)}</span></div>{r.comment && <p className="mt-1.5 text-sm">{r.comment}</p>}</Card>)}</HorizontalScroller>}
           </section>
         </div>
       )}

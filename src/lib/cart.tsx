@@ -10,7 +10,7 @@ import { stored, useStored } from './stored';
  * Read after hydration through an external store (see stored.ts), so a saved
  * basket never causes a hydration mismatch.
  */
-export interface CartLine { medicineId: string; name: string; strength: string | null; packSize: string | null; requiresPrescription: boolean; unitPriceMinor: number; quantity: number }
+export interface CartLine { medicineId: string; name: string; strength: string | null; packSize: string | null; requiresPrescription: boolean; unitPriceMinor: number; quantity: number; /** Photo (API-relative) and form for the basket thumbnail; optional so older saved baskets still load. */ imageUrl?: string | null; dosageForm?: string | null }
 export interface Cart { pharmacyId: string; pharmacyName: string; locationId: string; lines: CartLine[] }
 interface CartState { cart: Cart | null; add: (pharmacy: { id: string; name: string; locationId: string }, line: Omit<CartLine, 'quantity'>, quantity?: number) => 'added' | 'replaced'; setQuantity: (medicineId: string, quantity: number) => void; clear: () => void; totalMinor: number; count: number; needsPrescription: boolean }
 

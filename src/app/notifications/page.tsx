@@ -1,13 +1,16 @@
 'use client';
 
 import { useRouter } from 'next/navigation';
-import { Bell, CheckCheck } from 'lucide-react';
+import { Bell, CheckCheck, CheckCircle2 } from 'lucide-react';
 import { api } from '@/lib/api';
 import { useAction, useGet } from '@/lib/hooks';
 import { relative } from '@/lib/format';
 import { AppShell, RequireSignIn } from '@/components/layout/app-shell';
-import { Button, EmptyState, ErrorState, PageTitle, Skeleton, cx } from '@/components/ui/primitives';
+import { Button, EmptyState, ErrorState, IconTile, PageTitle, Skeleton, cx } from '@/components/ui/primitives';
 import { PushRow } from '@/app/account/page';
+
+/** Good news (confirmed, ready, delivered, completed) gets a green icon; everything else stays blue. */
+const isGoodNews = (n: Pick<Note, 'templateKey' | 'title'>) => { const t = `${n.templateKey} ${n.title ?? ''}`; return /confirm|accept|ready|deliver|complet|on the way|out_for_delivery/i.test(t) && !/cancel|reject|fail|no ambulance|not available|unavailable/i.test(t); };
 
 interface Note { id: string; channel: string; templateKey: string; status: string; title: string | null; body: string | null; link: string | null; readAt: string | null; createdAt: string }
 const INV = ['/portal/notifications', '/patient/summary'];
@@ -34,6 +37,7 @@ export default function NotificationsPage() {
               <li key={n.id}>
                 <button type="button" onClick={() => openNote(n)} className={cx('card-3d flex w-full items-start gap-3 rounded-3xl p-4 text-left', !n.readAt && 'border-l-4 border-primary')}>
                   <span className={cx('mt-1 h-2.5 w-2.5 shrink-0 rounded-full', n.readAt ? 'bg-transparent' : 'bg-primary')} aria-hidden />
+                  <IconTile icon={isGoodNews(n) ? CheckCircle2 : Bell} tone={isGoodNews(n) ? 'green' : 'primary'} size='sm' />
                   <span className="min-w-0 flex-1"><span className={cx('block text-sm', n.readAt ? 'font-semibold' : 'font-extrabold')}>{n.title ?? 'Update'}</span>{n.body && <span className="block text-sm text-muted">{n.body}</span>}<span className="mt-1 block text-xs text-muted">{relative(n.createdAt)}</span></span>
                 </button>
               </li>

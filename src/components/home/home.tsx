@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Ambulance, ArrowRight, CalendarCheck, ChevronRight, FlaskConical, Package, Pill, Siren, Stethoscope } from 'lucide-react';
+import { Ambulance, ArrowRight, CalendarCheck, ChevronRight, FlaskConical, Package, Pill, Siren, Star, Stethoscope } from 'lucide-react';
 import { useAuth } from '@/lib/auth';
 import { useGet } from '@/lib/hooks';
 import { API_BASE } from '@/lib/api';
@@ -9,7 +9,8 @@ import { usePatientUi } from '@/lib/patient-ui';
 import { useLocation, geoQuery } from '@/lib/location';
 import { count, money } from '@/lib/format';
 import { AppIcon } from '@/components/icons';
-import { Avatar, Button, Card, Rating, SectionTitle, Skeleton, StatusBadge, cx } from '@/components/ui/primitives';
+import { Avatar, Button, Card, SectionTitle, Skeleton, StatusBadge, cx } from '@/components/ui/primitives';
+import { HorizontalScroller } from '@/components/ui/horizontal-scroller';
 import { SmartSearch } from '@/components/search/smart-search';
 import { AppShell } from '@/components/layout/app-shell';
 
@@ -74,7 +75,7 @@ export function HomeScreen() {
 
         {/* Signed-in strip */}
         {me && s && (s.activeEmergency || s.nextAppointment || s.openLabOrders || s.openPharmacyOrders) ? (
-          <section className="stagger grid gap-3 sm:grid-cols-2">
+          <HorizontalScroller label="Your Care Right Now" itemClassName={[s.activeEmergency, s.nextAppointment, s.openLabOrders || s.openPharmacyOrders].filter(Boolean).length > 1 ? 'w-[88%] sm:w-[60%]' : 'w-full'} gridClassName="md:grid-cols-2">
             {s.activeEmergency && <Card href={`/emergency/${s.activeEmergency.id}`} className="border-2 border-danger/30 bg-danger-soft"><div className="flex items-center gap-3"><span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-danger text-white pulse-ring"><Siren size={22} aria-hidden /></span><div className="min-w-0 flex-1"><p className="text-sm font-extrabold text-danger">Ambulance request in progress</p><p className="text-xs text-muted">{s.activeEmergency.reference}</p></div><StatusBadge status={s.activeEmergency.status} /></div></Card>}
             {s.nextAppointment && (
               <Card href={`/appointments/${s.nextAppointment.id}`}>
@@ -86,60 +87,66 @@ export function HomeScreen() {
               </Card>
             )}
             {(s.openLabOrders > 0 || s.openPharmacyOrders > 0) && (
-              <Card href="/orders"><div className="flex items-center gap-3"><span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-violet-soft text-violet"><Package size={22} aria-hidden /></span><div className="min-w-0 flex-1"><p className="text-sm font-extrabold">Orders in progress</p><p className="text-xs text-muted">{s.openLabOrders ? `${s.openLabOrders} lab` : ''}{s.openLabOrders && s.openPharmacyOrders ? ' · ' : ''}{s.openPharmacyOrders ? `${s.openPharmacyOrders} medicine` : ''}</p></div><ChevronRight size={18} className="text-muted" /></div></Card>
+              <Card href="/orders"><div className="flex items-center gap-3"><span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-violet-soft text-violet"><Package size={22} aria-hidden /></span><div className="min-w-0 flex-1"><p className="text-sm font-extrabold">Orders in Progress</p><p className="text-xs text-muted">{s.openLabOrders ? `${s.openLabOrders} lab` : ''}{s.openLabOrders && s.openPharmacyOrders ? ' · ' : ''}{s.openPharmacyOrders ? `${s.openPharmacyOrders} medicine` : ''}</p></div><ChevronRight size={18} className="text-muted" /></div></Card>
             )}
-          </section>
+          </HorizontalScroller>
         ) : null}
 
         {/* Categories */}
         <section>
           <SectionTitle title="What Do You Need?" />
-          <div className="stagger grid grid-cols-3 gap-3 sm:grid-cols-4 lg:grid-cols-6">
-            {ui.categories.map((c) => (
-              <Link key={c.key} href={c.href} className="card-3d flex flex-col items-center gap-2 rounded-3xl p-3 text-center">
+          {(() => {
+            const tiles = ui.categories.map((c) => (
+              <Link key={c.key} href={c.href} className="card-3d flex h-full flex-col items-center gap-2 rounded-3xl p-3 text-center">
                 <span className="tile-3d flex h-12 w-12 items-center justify-center rounded-2xl text-white" style={{ '--tile': c.colour ?? ui.theme.primary } as React.CSSProperties}><AppIcon name={c.icon} size={22} /></span>
                 <span className="text-xs font-bold leading-tight">{c.label}</span>
               </Link>
-            ))}
-          </div>
+            ));
+            // Up to six tiles sit in two neat rows of three on a phone; more than that would stack, so they swipe instead.
+            return ui.categories.length > 6
+              ? <HorizontalScroller label="Care Categories" itemClassName="w-[30%] sm:w-[22%]" gridClassName="md:grid-cols-4 lg:grid-cols-6" dots={false}>{tiles}</HorizontalScroller>
+              : <div className="stagger grid grid-cols-3 gap-3 sm:grid-cols-4 lg:grid-cols-6">{tiles}</div>;
+          })()}
         </section>
 
         {/* Top doctors */}
         <section>
-          <SectionTitle title="Top-Rated Doctors" action="See all" href="/search?type=doctors" />
+          <RowTitle title="Top-Rated Doctors" href="/search?type=doctors" />
           {home.isPending ? <Skeleton card rows={2} className="sm:grid-cols-2" /> : (
-            <div className="no-scrollbar -mx-4 flex snap-x gap-3 overflow-x-auto px-4 pb-1 lg:mx-0 lg:grid lg:grid-cols-4 lg:px-0">
-              {(home.data?.topDoctors ?? []).map((d) => (
-                <Card key={d.id} href={`/doctors/${d.id}`} className="w-64 shrink-0 snap-start lg:w-auto">
-                  <div className="flex items-start gap-3"><Avatar name={d.name} size="lg" /><div className="min-w-0"><p className="truncate text-sm font-extrabold">{d.name}</p><p className="truncate text-xs text-muted">{d.speciality ?? 'Doctor'}{d.yearsOfExperience != null ? ` · ${d.yearsOfExperience} yrs` : ''}</p><Rating value={d.rating} count={d.ratingCount} /></div></div>
+            !home.data?.topDoctors.length ? <p className="text-sm text-muted">No doctors are listed yet.</p> : (
+            <HorizontalScroller label="Top-Rated Doctors" itemClassName="w-[80%] sm:w-[45%]" gridClassName="md:grid-cols-2 lg:grid-cols-4">
+              {home.data.topDoctors.map((d) => (
+                <Card key={d.id} href={`/doctors/${d.id}`} className="h-full">
+                  <div className="flex items-start gap-3"><Avatar name={d.name} size="lg" /><div className="min-w-0"><p className="truncate text-sm font-extrabold">{d.name}</p><p className="truncate text-xs text-muted">{d.speciality ?? 'Doctor'}{d.yearsOfExperience != null ? ` · ${d.yearsOfExperience} yrs` : ''}</p><RatingPill value={d.rating} count={d.ratingCount} /></div></div>
                   <div className="mt-3 flex items-center justify-between"><span className="text-xs text-muted">Consultation</span><span className="tnum text-sm font-extrabold">{d.feeMinor != null ? <><span className="text-xs font-semibold text-muted">from </span>{money(d.feeMinor)}</> : '—'}</span></div>
                 </Card>
               ))}
-              {home.data && !home.data.topDoctors.length && <p className="text-sm text-muted">No doctors are listed yet.</p>}
-            </div>
-          )}
+            </HorizontalScroller>
+          ))}
         </section>
 
         {/* Popular tests */}
         <section>
-          <SectionTitle title="Popular Lab Tests" action="All tests" href="/tests" />
+          <RowTitle title="Popular Lab Tests" href="/tests" />
           {home.isPending ? <Skeleton rows={3} /> : (
-            <div className="stagger grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
-              {(home.data?.popularTests ?? []).map((t) => (
-                <Card key={t.code} href={`/tests/${encodeURIComponent(t.code)}`} className="flex items-center gap-3">
-                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-violet-soft text-violet"><FlaskConical size={20} aria-hidden /></span>
-                  <span className="min-w-0 flex-1"><span className="block truncate text-sm font-bold">{t.name}</span><span className="block text-xs text-muted">{count(t.providers)} lab{t.providers === 1 ? '' : 's'}{t.fromMinor != null ? ` · from ${money(t.fromMinor)}` : ''}</span></span>
-                  <ChevronRight size={18} className="shrink-0 text-muted" aria-hidden />
+            !home.data?.popularTests.length ? <p className="text-sm text-muted">No tests are listed yet.</p> : (
+            <HorizontalScroller label="Popular Lab Tests" itemClassName="w-[44%] sm:w-[30%]" gridClassName="md:grid-cols-4">
+              {home.data.popularTests.map((t) => (
+                <Card key={t.code} href={`/tests/${encodeURIComponent(t.code)}`} className="flex h-full flex-col gap-2">
+                  <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-green-soft text-green-ink"><FlaskConical size={20} aria-hidden /></span>
+                  <span className="line-clamp-2 min-h-10 text-sm font-bold leading-5">{t.name}</span>
+                  <span className="mt-auto block text-xs text-muted">{count(t.providers)} lab{t.providers === 1 ? '' : 's'}</span>
+                  {t.fromMinor != null && <span className="tnum block text-sm font-extrabold"><span className="text-xs font-semibold text-muted">from </span>{money(t.fromMinor)}</span>}
                 </Card>
               ))}
-            </div>
-          )}
+            </HorizontalScroller>
+          ))}
         </section>
 
         {/* Counts + emergency */}
         <section className="grid gap-3 sm:grid-cols-[1fr_1fr] lg:grid-cols-[2fr_1fr]">
           <div className="card-3d rounded-3xl p-4">
-            <p className="text-sm font-extrabold">Verified and listed near {place?.label ?? 'you'}</p>
+            <p className="text-sm font-extrabold">Verified and Listed Near {place?.label ?? 'you'}</p>
             <div className="mt-3 grid grid-cols-3 gap-2 text-center">
               {[['DOCTOR', 'Doctors', Stethoscope], ['DIAGNOSTIC_LAB', 'Labs', FlaskConical], ['PHARMACY', 'Pharmacies', Package]].map(([k, l, I]) => { const Icon = I as typeof Stethoscope; return <div key={k as string} className="rounded-2xl bg-soft p-3"><Icon size={18} className="mx-auto text-primary" aria-hidden /><p className="tnum mt-1 text-lg font-extrabold">{home.data ? count(home.data.counts[k as string] ?? 0) : '—'}</p><p className="text-[11px] text-muted">{l as string}</p></div>; })}
             </div>
@@ -160,4 +167,20 @@ export function HomeScreen() {
       </div>
     </AppShell>
   );
+}
+
+/** Section heading with a "See All" link that is a full 44 px tap target. */
+function RowTitle({ title, href }: { title: string; href: string }) {
+  return (
+    <div className="mb-2 flex items-center justify-between gap-3">
+      <h2 className="text-lg font-extrabold tracking-tight">{title}</h2>
+      <Link href={href} className="-mr-2 inline-flex h-11 items-center gap-0.5 rounded-[5px] px-2 text-sm font-semibold text-primary">See All <ChevronRight size={15} aria-hidden /></Link>
+    </div>
+  );
+}
+
+/** Green rating pill for doctor cards (green ink on the soft green tint passes WCAG AA). */
+function RatingPill({ value, count: n }: { value: number | null; count: number }) {
+  if (value == null) return <span className="mt-1 inline-flex rounded-[5px] bg-green-soft px-1.5 py-0.5 text-xs font-bold text-green-ink">New</span>;
+  return <span className="mt-1 inline-flex items-center gap-1 rounded-[5px] bg-green-soft px-1.5 py-0.5 text-xs font-bold text-green-ink"><Star size={12} className="fill-green text-green" aria-hidden /><span className="tnum">{value.toFixed(1)}</span>{n > 0 && <span className="font-normal text-muted">({n})</span>}</span>;
 }

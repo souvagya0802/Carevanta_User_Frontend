@@ -14,11 +14,13 @@ import { forwardRef, useEffect, useId, useRef, useState, type ButtonHTMLAttribut
 export const cx = clsx;
 
 /* ─── Buttons ─────────────────────────────────────────────────────────── */
-type Variant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'white' | 'soft';
+type Variant = 'primary' | 'secondary' | 'ghost' | 'danger' | 'white' | 'soft' | 'green';
 const variants: Record<Variant, string> = {
   primary: 'bg-brand text-white shadow-glow hover:brightness-105 disabled:opacity-50 disabled:shadow-none',
   secondary: 'border border-line bg-surface text-ink hover:bg-soft disabled:text-muted',
   soft: 'bg-primary-soft text-primary hover:bg-primary/15 disabled:text-muted',
+  // Secondary green action (e.g. "Call", "Directions", "Reorder"). Primary actions stay blue.
+  green: 'border border-green/25 bg-green-soft text-green-ink hover:bg-green/15 disabled:text-muted',
   ghost: 'text-muted hover:bg-soft hover:text-ink disabled:text-muted/60',
   danger: 'bg-danger text-white shadow-[0_14px_30px_-14px_rgb(225_29_72/0.6)] hover:brightness-105 disabled:opacity-50',
   white: 'bg-white text-primary shadow-card hover:bg-soft disabled:text-muted',
@@ -56,22 +58,35 @@ export function SectionTitle({ title, action, href, className }: { title: string
   return (
     <div className={cx('mb-3 flex items-end justify-between gap-3', className)}>
       <h2 className="text-lg font-extrabold tracking-tight">{title}</h2>
-      {action && href && <Link href={href} className="text-sm font-semibold text-primary">{action}</Link>}
+      {/* 44 px tap target; label in Title Case ("see all" -> "See All") per the founder's label rule. */}
+      {action && href && <Link href={href} className="-my-2 inline-flex min-h-11 shrink-0 items-center text-sm font-semibold text-primary">{action.replace(/\b\w/g, (c) => c.toUpperCase())}</Link>}
     </div>
   );
 }
 
-export function Chip({ active, children, onClick, className }: { active?: boolean; children: ReactNode; onClick?: () => void; className?: string }) {
-  return <button type="button" aria-pressed={active} onClick={onClick} className={cx('inline-flex h-11 shrink-0 items-center gap-1.5 rounded-full border px-3.5 text-sm font-semibold', active ? 'border-primary bg-primary text-white shadow-glow' : 'border-line bg-surface text-ink hover:bg-soft', className)}>{children}</button>;
+/** `tone="green"` gives a wellness/secondary chip (pale green, dark green text; solid green when active). */
+export function Chip({ active, children, onClick, className, tone = 'primary' }: { active?: boolean; children: ReactNode; onClick?: () => void; className?: string; tone?: 'primary' | 'green' }) {
+  const look = tone === 'green'
+    ? (active ? 'border-green-dark bg-green-dark text-white' : 'border-green/30 bg-green-soft text-green-ink hover:bg-green/15')
+    : (active ? 'border-primary bg-primary text-white shadow-glow' : 'border-line bg-surface text-ink hover:bg-soft');
+  return <button type="button" aria-pressed={active} onClick={onClick} className={cx('inline-flex h-11 shrink-0 items-center gap-1.5 rounded-full border px-3.5 text-sm font-semibold', look, className)}>{children}</button>;
 }
 
-export function Badge({ children, tone = 'muted' }: { children: ReactNode; tone?: 'primary' | 'success' | 'warning' | 'danger' | 'muted' | 'violet' | 'white' }) {
-  const t = { primary: 'bg-primary-soft text-primary', success: 'bg-success-soft text-success', warning: 'bg-warning-soft text-warning', danger: 'bg-danger-soft text-danger', muted: 'bg-soft text-muted', violet: 'bg-violet-soft text-violet', white: 'bg-white/20 text-white' }[tone];
+// Text colours here pass WCAG AA on their soft backgrounds; green text always uses green-ink.
+export function Badge({ children, tone = 'muted' }: { children: ReactNode; tone?: 'primary' | 'success' | 'green' | 'warning' | 'danger' | 'muted' | 'violet' | 'white' }) {
+  const t = { primary: 'bg-primary-soft text-primary-dark', success: 'bg-green-soft text-green-ink', green: 'bg-green-soft text-green-ink', warning: 'bg-warning-soft text-[#92400e]', danger: 'bg-danger-soft text-[#be123c]', muted: 'bg-soft text-muted', violet: 'bg-violet-soft text-violet', white: 'bg-white/20 text-white' }[tone];
   return <span className={cx('inline-flex items-center rounded-full px-2.5 py-0.5 text-[11px] font-bold tracking-wide uppercase', t)}>{children}</span>;
 }
 
+/** Rounded icon square. `tone="green"` for health, wellness and success icons; blue by default. Additive helper. */
+export function IconTile({ icon: Icon, tone = 'primary', size = 'md', className }: { icon: LucideIcon; tone?: 'primary' | 'green' | 'accent'; size?: 'sm' | 'md'; className?: string }) {
+  const t = { primary: 'bg-primary-soft text-primary', green: 'bg-green-soft text-green-ink', accent: 'bg-accent-soft text-primary-dark' }[tone];
+  return <span aria-hidden className={cx('flex shrink-0 items-center justify-center rounded-2xl', size === 'sm' ? 'h-10 w-10' : 'h-12 w-12', t, className)}><Icon size={size === 'sm' ? 18 : 22} /></span>;
+}
+
+// ACCEPTED/CONFIRMED read green: the provider has said yes, matching the booking step bar.
 const STATUS_TONE: Record<string, 'primary' | 'success' | 'warning' | 'danger' | 'muted' | 'violet'> = {
-  REQUESTED: 'warning', PLACED: 'warning', PRESCRIPTION_REVIEW: 'violet', CONFIRMED: 'primary', ACCEPTED: 'primary', PREPARING: 'primary', CHECKED_IN: 'primary', SAMPLE_COLLECTED: 'primary', PROCESSING: 'primary', REPORT_READY: 'success', READY_FOR_PICKUP: 'success', OUT_FOR_DELIVERY: 'primary', COMPLETED: 'success', DELIVERED: 'success', NO_SHOW: 'danger', REJECTED: 'danger', CANCELLED: 'danger', CANCELLED_BY_PATIENT: 'danger', CANCELLED_BY_PROVIDER: 'danger', CANCELLED_BY_PLATFORM: 'danger', RETURNED: 'danger', RESCHEDULED: 'muted', OFFERED: 'warning', SEARCHING: 'warning', EN_ROUTE: 'primary', ARRIVED: 'success', PATIENT_ONBOARD: 'primary', AT_DESTINATION: 'success', NO_PROVIDER_AVAILABLE: 'danger', ESCALATED: 'danger',
+  REQUESTED: 'warning', PLACED: 'warning', PRESCRIPTION_REVIEW: 'violet', CONFIRMED: 'success', ACCEPTED: 'success', PREPARING: 'primary', CHECKED_IN: 'primary', SAMPLE_COLLECTED: 'primary', PROCESSING: 'primary', REPORT_READY: 'success', READY_FOR_PICKUP: 'success', OUT_FOR_DELIVERY: 'primary', COMPLETED: 'success', DELIVERED: 'success', NO_SHOW: 'danger', REJECTED: 'danger', CANCELLED: 'danger', CANCELLED_BY_PATIENT: 'danger', CANCELLED_BY_PROVIDER: 'danger', CANCELLED_BY_PLATFORM: 'danger', RETURNED: 'danger', RESCHEDULED: 'muted', OFFERED: 'warning', SEARCHING: 'warning', EN_ROUTE: 'primary', ARRIVED: 'success', PATIENT_ONBOARD: 'primary', AT_DESTINATION: 'success', NO_PROVIDER_AVAILABLE: 'danger', ESCALATED: 'danger',
 };
 export const statusLabel = (s: string) => s.toLowerCase().replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()).replace('By Patient', 'by you').replace('By Provider', 'by provider').replace('By Platform', 'by Carevanta');
 export function StatusBadge({ status }: { status: string }) { return <Badge tone={STATUS_TONE[status] ?? 'muted'}>{statusLabel(status)}</Badge>; }
@@ -215,7 +230,7 @@ export function StepBar({ steps, current }: { steps: string[]; current: number }
             >
               {done ? <Check size={14} strokeWidth={3} aria-hidden /> : i + 1}
             </span>
-            <span className={cx('ml-2 hidden truncate text-xs font-semibold sm:block', active ? 'text-ink' : done ? 'text-success' : 'text-muted')}>{s}</span>
+            <span className={cx('ml-2 hidden truncate text-xs font-semibold sm:block', active ? 'text-ink' : done ? 'text-green-ink' : 'text-muted')}>{s}</span>
             {i < steps.length - 1 && <span className={cx('mx-2 h-0.5 min-w-4 flex-1 rounded-full transition-colors', done ? 'bg-success' : 'bg-line')} aria-hidden />}
           </li>
         );
@@ -226,9 +241,11 @@ export function StepBar({ steps, current }: { steps: string[]; current: number }
 
 export function PageTitle({ title, subtitle, back, right }: { title: string; subtitle?: string; back?: ReactNode; right?: ReactNode }) {
   return (
-    <div className="mb-4 flex items-start gap-3">
+    // Wraps: when the right-hand actions do not fit beside a readable title (phones), they move to the next line
+    // instead of squeezing the title into a narrow column.
+    <div className="mb-4 flex flex-wrap items-start gap-3">
       {back}
-      <div className="min-w-0 flex-1"><h1 className="text-2xl font-extrabold tracking-tight">{title}</h1>{subtitle && <p className="mt-0.5 text-sm text-muted">{subtitle}</p>}</div>
+      <div className="min-w-[12rem] flex-1"><h1 className="text-2xl font-extrabold tracking-tight">{title}</h1>{subtitle && <p className="mt-0.5 text-sm text-muted">{subtitle}</p>}</div>
       {right}
     </div>
   );

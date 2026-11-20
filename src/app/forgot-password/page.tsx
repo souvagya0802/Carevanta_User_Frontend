@@ -23,7 +23,7 @@ export default function ForgotPasswordPage() {
     <AuthFrame title="Reset Your Password" subtitle="We will send a one-time code to the mobile number or email on your account." footer={<Link href="/login" className="font-bold text-primary">Back to Sign In</Link>}>
       {sent ? (
         <div className="space-y-4 text-center">
-          <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-success-soft text-success"><MailCheck size={26} aria-hidden /></span>
+          <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-success-soft text-green-ink"><MailCheck size={26} aria-hidden /></span>
           <p className="text-sm text-muted">If an account exists for <span className="font-semibold text-ink">{identifier}</span>, a code is on its way. It expires in 60 minutes.</p>
           <Link href={`/reset-password?identifier=${encodeURIComponent(identifier)}`}><Button full size="lg">I Have the Code</Button></Link>
         </div>

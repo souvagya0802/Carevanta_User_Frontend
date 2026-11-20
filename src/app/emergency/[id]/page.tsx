@@ -59,7 +59,7 @@ export default function EmergencyStatusPage() {
 
               {d.confirmedBy && (
                 <Card className="border-2 border-success/40">
-                  <p className="flex items-center gap-2 text-base font-extrabold"><CheckCircle2 size={18} className="text-success" /> Confirmed by {d.confirmedBy.operator.displayName}</p>
+                  <p className="flex items-center gap-2 text-base font-extrabold"><CheckCircle2 size={18} className="text-green-ink" /> Confirmed by {d.confirmedBy.operator.displayName}</p>
                   <div className="mt-3 grid grid-cols-2 gap-2 text-sm">
                     <div className="rounded-2xl bg-soft p-3"><p className="text-[11px] font-semibold text-muted">Vehicle</p><p className="font-extrabold">{d.confirmedBy.vehicle?.registrationNumber ?? '—'}</p><p className="text-xs text-muted">{d.confirmedBy.vehicle ? title(d.confirmedBy.vehicle.vehicleType) : ''}</p></div>
                     <div className="rounded-2xl bg-soft p-3"><p className="text-[11px] font-semibold text-muted">Estimated arrival</p><p className="tnum font-extrabold">{d.confirmedBy.etaMinutes != null ? `${d.confirmedBy.etaMinutes} min` : 'Operator will call'}</p></div>
