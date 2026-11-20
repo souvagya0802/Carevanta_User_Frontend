@@ -13,6 +13,7 @@ import { disablePush, enablePush, getPushState, isStandalone, type PushState } f
 import { AppShell, RequireSignIn } from '@/components/layout/app-shell';
 import { Avatar, Button, Card, Field, PageTitle, PasswordInput, Sheet } from '@/components/ui/primitives';
 import { useToast } from '@/components/ui/toast';
+import { AccountInvoices } from '@/components/invoices';
 
 type InstallPrompt = Event & { prompt: () => Promise<void>; userChoice: Promise<{ outcome: 'accepted' | 'dismissed' }> };
 
@@ -45,6 +46,8 @@ export default function AccountPage() {
           <InstallRow />
           <button type="button" onClick={() => setChanging(true)} className="card-3d flex w-full items-center gap-3 rounded-3xl p-4 text-left"><span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary-soft text-primary"><KeyRound size={20} /></span><span className="min-w-0 flex-1"><span className="block text-sm font-extrabold">Change Password</span><span className="block text-xs text-muted">At least 12 characters</span></span><ChevronRight size={16} className="text-muted" /></button>
         </div>
+
+        <div className="mt-4"><AccountInvoices /></div>
 
         <Card className="mt-4">
           <p className="flex items-center gap-2 text-sm font-extrabold"><HelpCircle size={16} className="text-primary" /> Help and Support</p>

@@ -12,11 +12,11 @@ import type { ProviderHit } from '@/components/provider-card';
 
 /** Availability of a medicine as the API counts it (`/public/catalogue/medicines`, `/…/medicines/:id`). */
 export interface Availability { pharmaciesTotal: number; pharmaciesNearby: number | null; fromMinor: number | null; fromMinorNearby: number | null; radiusKm: number | null; nearest: { pharmacyId: string; pharmacyName: string; distanceKm: number } | null }
-export interface MedicineHit extends Availability { id: string; name: string; genericName: string | null; composition: string | null; strength: string | null; dosageForm: string | null; packSize: string | null; manufacturer: string | null; requiresPrescription: boolean; schedule: string; pharmacies: number; substitutes: number; imageUrl: string | null }
-export interface Substitute extends Availability { id: string; name: string; strength: string | null; dosageForm: string | null; packSize: string | null; manufacturer: string | null; requiresPrescription: boolean; imageUrl: string | null; savingsMinor: number | null; savingsPercent: number | null }
+export interface MedicineHit extends Availability { id: string; name: string; genericName: string | null; composition: string | null; strength: string | null; dosageForm: string | null; packSize: string | null; manufacturer: string | null; requiresPrescription: boolean; schedule: string; pharmacies: number; substitutes: number; imageUrl: string | null; imageCredit?: string | null; imageLicence?: string | null; imageSourceUrl?: string | null; imageIsRepresentative?: boolean }
+export interface Substitute extends Availability { id: string; name: string; strength: string | null; dosageForm: string | null; packSize: string | null; manufacturer: string | null; requiresPrescription: boolean; imageUrl: string | null; imageIsRepresentative?: boolean; savingsMinor: number | null; savingsPercent: number | null }
 export interface MedicineDetail {
   id: string; name: string; genericName: string | null; composition: string | null; strength: string | null; dosageForm: string | null; packSize: string | null; manufacturer: string | null; route: string | null;
-  schedule: string; requiresPrescription: boolean; source: string; compositionKey: string | null; imageUrl: string | null;
+  schedule: string; requiresPrescription: boolean; source: string; compositionKey: string | null; imageUrl: string | null; imageCredit?: string | null; imageLicence?: string | null; imageSourceUrl?: string | null; imageIsRepresentative?: boolean;
   therapeuticClass: string | null; uses: string | null; howItWorks: string | null; sideEffects: string | null; contraindications: string | null; interactions: string | null; precautions: string | null; storage: string | null;
   infoSource: string | null; infoUpdatedAt: string | null; infoSourceLine: string | null; disclaimer: string; attribution: string | null;
   availability: Availability; substitutes: Substitute[]; substitutesTotal: number; substituteNote: string;
@@ -92,7 +92,7 @@ export const medicineImageSrc = (imageUrl: string | null | undefined) => (imageU
 const SIZE = { xs: 'h-10 w-10', sm: 'h-12 w-12', md: 'h-16 w-16', lg: 'aspect-[4/3] w-full' } as const;
 
 /** Medicine photo in a fixed box (nothing jumps while it loads), or a clean placeholder by dosage form. */
-export function MedicineImage({ imageUrl, name, dosageForm, size = 'sm', className }: { imageUrl: string | null | undefined; name: string; dosageForm?: string | null; size?: keyof typeof SIZE; className?: string }) {
+export function MedicineImage({ imageUrl, name, dosageForm, size = 'sm', className, representative }: { imageUrl: string | null | undefined; name: string; dosageForm?: string | null; size?: keyof typeof SIZE; className?: string; representative?: boolean }) {
   const [failed, setFailed] = useState(false);
   const src = failed ? null : medicineImageSrc(imageUrl);
   const kind = formKind(dosageForm);
@@ -108,7 +108,20 @@ export function MedicineImage({ imageUrl, name, dosageForm, size = 'sm', classNa
           {size === 'lg' && <span className="text-xs font-semibold text-muted">{FORM_LABEL[kind]}</span>}
         </span>
       )}
+      {src && representative && <span title="Representative image, not this brand's pack" className={cx('absolute right-0.5 bottom-0.5 rounded-[5px] bg-white/90 font-semibold text-muted', size === 'lg' || size === 'md' ? 'px-1.5 py-0.5 text-[10px]' : 'px-0.5 text-[7px] leading-tight')}>{size === 'lg' || size === 'md' ? 'Representative' : 'Rep.'}<span className="sr-only"> image</span></span>}
     </span>
+  );
+}
+
+/** Credit for an openly licensed web photo (required by CC BY), and the representative label. */
+export function PhotoCredit({ credit, licence, sourceUrl, representative }: { credit?: string | null; licence?: string | null; sourceUrl?: string | null; representative?: boolean }) {
+  if (!credit && !representative) return null;
+  const via = credit ? / via (.+)$/.exec(credit) : null;
+  return (
+    <p className="mt-1.5 text-[11px] leading-snug text-muted">
+      {representative && <span className="mr-1.5 inline-block rounded-[5px] bg-soft px-1.5 py-0.5 font-semibold">Representative image (not this brand&apos;s pack)</span>}
+      {credit && <>Photo: {credit.replace(/ via (.+)$/, '')}, {licence ?? 'open licence'}{via ? ` via ${via[1]}` : ''}{sourceUrl && <> · <a href={sourceUrl} target="_blank" rel="noopener noreferrer" className="underline">Source</a></>}</>}
+    </p>
   );
 }
 

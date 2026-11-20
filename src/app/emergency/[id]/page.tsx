@@ -6,6 +6,7 @@ import { Ambulance, ArrowLeft, CheckCircle2, Clock, Phone, Siren } from 'lucide-
 import { useGet } from '@/lib/hooks';
 import { dateTime, title } from '@/lib/format';
 import { AppShell, RequireSignIn } from '@/components/layout/app-shell';
+import { InvoiceDownloads, type InvoiceMeta } from '@/components/invoices';
 import { Card, ErrorState, Skeleton, StatusBadge, cx } from '@/components/ui/primitives';
 
 // Leaflet needs the browser, so the map loads on the client only.
@@ -16,6 +17,8 @@ interface Dispatch {
   id: string; reference: string; status: string; pickupDistrict: string | null; requiredVehicleType: string | null; ambulanceConfirmed: boolean; emergencyNumber: string;
   confirmedBy: { operator: { id: string; displayName: string }; vehicle: { registrationNumber: string; vehicleType: string } | null; confirmationSource: string; etaMinutes: number | null } | null;
   escalatedAt: string | null; escalationNote: string | null; closedAt: string | null; createdAt: string;
+  /** Additive fields from the invoice API; absent until a trip is billed through Carevanta. */
+  transaction?: { id: string; status: string } | null; invoices?: InvoiceMeta[];
   events: { fromStatus: string | null; toStatus: string; actorKind: string; note: string | null; createdAt: string }[];
 }
 const OPEN = ['RECEIVED', 'SEARCHING', 'OFFERED', 'ACCEPTED', 'EN_ROUTE', 'ARRIVED', 'PATIENT_ONBOARD', 'AT_DESTINATION'];
@@ -90,6 +93,7 @@ export default function EmergencyStatusPage() {
                   <li className="flex gap-3 text-sm"><span className="mt-1 h-2.5 w-2.5 shrink-0 rounded-full bg-line" /><span><span className="block font-semibold">Request sent</span><span className="block text-xs text-muted">{dateTime(d.createdAt)}{d.pickupDistrict ? ` · ${d.pickupDistrict}` : ''}</span></span></li>
                 </ol>
               </Card>
+              <InvoiceDownloads transaction={d.transaction} invoices={d.invoices} />
               <p className="flex items-center gap-1 text-xs text-muted"><Ambulance size={12} /> An ambulance is only shown as confirmed when the operator actually accepted. We never guess.</p>
             </>
           )}

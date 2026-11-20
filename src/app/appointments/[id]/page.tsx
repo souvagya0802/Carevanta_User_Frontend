@@ -14,6 +14,7 @@ import type { Appt } from '@/app/care/page';
 import { when } from '@/app/care/page';
 import { Avatar, Badge, Button, Card, Chip, ErrorState, Field, Sheet, Skeleton, StatusBadge, Textarea, cx, statusLabel } from '@/components/ui/primitives';
 import { useToast } from '@/components/ui/toast';
+import { InvoiceDownloads, type InvoiceMeta } from '@/components/invoices';
 
 interface Slot { id: string; startsAt: string; locationId: string; locationName: string; available: number }
 interface Payments { activeGateway: string; publicKey: string | null; mode: string | null }
@@ -94,6 +95,7 @@ export default function AppointmentPage() {
                 {canReview && <Button variant="soft" onClick={() => setReviewing(true)}><Star size={16} /> Rate This Visit</Button>}
                 {a.status === 'COMPLETED' && reviewed && <p className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-success-soft px-5 text-sm font-semibold text-green-ink"><Star size={16} className="fill-success" aria-hidden /> You reviewed this visit</p>}
               </div>
+              <InvoiceDownloads transaction={a.transaction} invoices={(a as { invoices?: InvoiceMeta[] }).invoices} />
               {a.transaction?.status === 'PAY_AT_PROVIDER' && <p className="text-xs text-muted">You chose to pay at the counter. Carry the reference above.</p>}
             </>
           )}

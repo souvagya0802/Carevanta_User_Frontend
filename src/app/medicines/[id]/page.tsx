@@ -3,16 +3,17 @@
 import Link from 'next/link';
 import { useParams, useRouter, useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
-import { ArrowLeft, ChevronDown, FileText, Info, ShoppingBag, Store } from 'lucide-react';
-import { useCart } from '@/lib/cart';
+import { ArrowLeft, ChevronDown, FileText, Info, Store } from 'lucide-react';
 import { useGet } from '@/lib/hooks';
 import { geoQuery, useLocation } from '@/lib/location';
 import { medicineLabel, money } from '@/lib/format';
 import { AppShell } from '@/components/layout/app-shell';
 import { LocationPill } from '@/components/map/location-pill';
 import type { ProviderHit } from '@/components/provider-card';
-import { availabilityText, bestPrice, CDCI_ATTRIBUTION, infoSections, ingredientChips, MedicineImage, savingsText, useAddMedicineToCart, type MedicineDetail } from '@/components/medicine/medicine-ui';
-import { Avatar, Badge, Button, EmptyState, ErrorState, Skeleton } from '@/components/ui/primitives';
+import { availabilityText, bestPrice, CDCI_ATTRIBUTION, infoSections, ingredientChips, MedicineImage, PhotoCredit, savingsText, type MedicineDetail } from '@/components/medicine/medicine-ui';
+import { BasketLink } from '@/components/medicine/basket-link';
+import { AddToBasketControl, CartLineStepper } from '@/components/medicine/qty-stepper';
+import { Avatar, Badge, EmptyState, ErrorState, Skeleton } from '@/components/ui/primitives';
 
 const TONE_TEXT = { success: 'text-success', warning: 'text-warning', muted: 'text-muted' } as const;
 const surface = 'card-3d min-w-0 rounded-[5px] p-4';
@@ -32,18 +33,16 @@ function MedicineInner() {
   const preferred = params.get('provider');
   const router = useRouter();
   const { place } = useLocation();
-  const cart = useCart();
   const geo = geoQuery(place);
   const q = useGet<MedicineDetail>(`/public/catalogue/medicines/${id}${geo ? `?${geo.slice(1)}` : ''}`);
   const shops = useGet<{ items: (ProviderHit & { beyondRadius?: boolean })[]; radiusKm: number | null; beyondRadius?: boolean }>(q.data ? `/discovery/providers?medicineId=${id}&limit=20${geo}` : null);
-  const { add, adding } = useAddMedicineToCart();
   const d = q.data;
 
   const header = (
     <div className="mb-4 flex items-center gap-3">
       <button type="button" onClick={() => router.back()} aria-label="Back" className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white shadow-card"><ArrowLeft size={18} /></button>
       <h1 className="min-w-0 flex-1 truncate text-xl font-extrabold">Medicine Details</h1>
-      <Link href="/cart" aria-label="Basket" className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white shadow-card"><ShoppingBag size={20} />{cart.count > 0 && <span className="tnum absolute -top-0.5 -right-0.5 flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-white">{cart.count}</span>}</Link>
+      <BasketLink />
     </div>
   );
 
@@ -63,7 +62,9 @@ function MedicineInner() {
 
         {/* Summary */}
         <section className={surface} aria-labelledby="med-name">
-          <MedicineImage imageUrl={d.imageUrl} name={d.name} dosageForm={d.dosageForm} size="lg" className="mb-4 bg-soft" />
+          <MedicineImage imageUrl={d.imageUrl} name={d.name} dosageForm={d.dosageForm} size="lg" className="bg-soft" representative={!!d.imageUrl && d.imageIsRepresentative} />
+          {d.imageUrl && <PhotoCredit credit={d.imageCredit} licence={d.imageLicence} sourceUrl={d.imageSourceUrl} representative={d.imageIsRepresentative} />}
+          <div className="mb-4" />
           <div className="flex flex-wrap items-center gap-1.5">{d.requiresPrescription && <Badge tone="violet">Rx</Badge>}{d.therapeuticClass && <Badge tone="primary">{d.therapeuticClass}</Badge>}</div>
           <h2 id="med-name" className="mt-2 text-2xl leading-tight font-extrabold tracking-tight break-words">{label}</h2>
           <p className="mt-1 text-sm text-muted">{[d.dosageForm, d.packSize ? `Pack of ${d.packSize}` : null, d.route].filter(Boolean).join(' · ')}</p>
@@ -98,12 +99,12 @@ function MedicineInner() {
             {shops.isPending ? <Skeleton rows={2} /> : shops.isError ? <ErrorState error={shops.error} retry={() => shops.refetch()} /> : !items.length ? <EmptyState icon={Store} title="No pharmacy has it in stock" description={d.substitutesTotal ? 'See the substitutes below, and ask your doctor or pharmacist.' : 'Try again later.'} /> : (
               <ul className="grid grid-cols-1 gap-2">
                 {items.map((s) => (
-                  <li key={s.id} className="flex min-w-0 items-center gap-3 rounded-[5px] border border-line p-3">
+                  <li key={s.id} className="flex min-w-0 flex-wrap items-center gap-3 rounded-[5px] border border-line p-3 sm:flex-nowrap">
                     <Avatar name={s.name} tone="#F59E0B" />
-                    <span className="min-w-0 flex-1"><Link href={`/providers/${s.id}`} className="block truncate text-sm font-extrabold">{s.name}</Link><span className="block truncate text-xs text-muted">{[s.locality ?? s.city, s.distanceKm != null ? `${s.distanceKm} km` : null, s.homeService ? 'Delivers' : 'Pickup'].filter(Boolean).join(' · ')}</span></span>
-                    <span className="flex shrink-0 flex-col items-end gap-1">
+                    <span className="min-w-0 flex-1 basis-[calc(100%-60px)] sm:basis-auto"><Link href={`/providers/${s.id}`} className="block truncate text-sm font-extrabold">{s.name}</Link><span className="block truncate text-xs text-muted">{[s.locality ?? s.city, s.distanceKm != null ? `${s.distanceKm} km` : null, s.homeService ? 'Delivers' : 'Pickup'].filter(Boolean).join(' · ')}</span></span>
+                    <span className="ml-auto flex shrink-0 items-center gap-3 sm:flex-col sm:items-end sm:gap-1">
                       <span className="tnum text-sm font-extrabold">{money(s.priceMinor)}</span>
-                      <Button size="sm" onClick={() => void add(s, { ...d, fromMinor: d.availability.fromMinor })} loading={adding === s.id}>Add To Cart</Button>
+                      <AddToBasketControl shop={s} medicine={{ ...d, fromMinor: d.availability.fromMinor }} />
                     </span>
                   </li>
                 ))}
@@ -139,9 +140,9 @@ function MedicineInner() {
                 const sp = bestPrice(s);
                 const save = savingsText(s.savingsMinor, s.savingsPercent);
                 return (
-                  <li key={s.id} className="min-w-0">
+                  <li key={s.id} className="flex min-w-0 flex-col">
                     <Link href={`/medicines/${s.id}`} className="flex h-full min-w-0 items-start gap-3 rounded-[5px] border border-line p-3 hover:bg-soft">
-                      <MedicineImage imageUrl={s.imageUrl} name={s.name} dosageForm={s.dosageForm} />
+                      <MedicineImage imageUrl={s.imageUrl} name={s.name} dosageForm={s.dosageForm} representative={s.imageIsRepresentative} />
                       <span className="min-w-0 flex-1">
                         <span className="block truncate text-sm font-extrabold">{medicineLabel(s.name, s.strength)}</span>
                         <span className="block truncate text-xs text-muted">{[s.manufacturer, s.packSize ? `Pack of ${s.packSize}` : null].filter(Boolean).join(' · ') || s.dosageForm}</span>
@@ -149,6 +150,8 @@ function MedicineInner() {
                         <span className={`mt-1 block text-xs font-semibold ${TONE_TEXT[sa.tone]}`}>{sa.text}</span>
                       </span>
                     </Link>
+                    {/* Only when this substitute is already in the basket (the patient chose it); never switched automatically. */}
+                    <CartLineStepper medicineId={s.id} className="mt-1 self-end" />
                   </li>
                 );
               })}

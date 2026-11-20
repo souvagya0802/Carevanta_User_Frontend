@@ -7,11 +7,12 @@ import { api } from '@/lib/api';
 import { useAction, useGet } from '@/lib/hooks';
 import { dateTime, medicineLabel, money, monthYear } from '@/lib/format';
 import { AppShell, RequireSignIn } from '@/components/layout/app-shell';
+import { InvoiceDownloads, type InvoiceMeta } from '@/components/invoices';
 import { OrderTimeline } from '@/components/order-timeline';
 import { MedicineImage } from '@/components/medicine/medicine-ui';
 import { Badge, Button, Card, ErrorState, Sheet, Skeleton, StatusBadge, Textarea, statusLabel } from '@/components/ui/primitives';
 
-interface Order { id: string; reference: string; status: string; provider: { id: string; displayName: string }; patient: { fullName: string }; fulfilment: string; deliveryPincode: string | null; prescriptionId: string | null; totalMinor: number; statusReason: string | null; items: { id: string; medicine: { id?: string; name: string; strength: string | null; schedule: string; imageUrl?: string | null }; quantity: number; unitPriceMinor: number; batchNumber: string | null; expiryDate: string | null }[]; transaction: { id: string; status: string } | null; createdAt: string }
+interface Order { id: string; reference: string; status: string; provider: { id: string; displayName: string }; patient: { fullName: string }; fulfilment: string; deliveryPincode: string | null; prescriptionId: string | null; totalMinor: number; statusReason: string | null; items: { id: string; medicine: { id?: string; name: string; strength: string | null; schedule: string; imageUrl?: string | null }; quantity: number; unitPriceMinor: number; batchNumber: string | null; expiryDate: string | null }[]; transaction: { id: string; status: string } | null; createdAt: string; invoices?: InvoiceMeta[] }
 const PICKUP = [{ key: 'PLACED', label: 'Placed' }, { key: 'ACCEPTED', label: 'Accepted' }, { key: 'PREPARING', label: 'Preparing' }, { key: 'READY_FOR_PICKUP', label: 'Ready' }, { key: 'DELIVERED', label: 'Collected' }];
 const DELIVERY = [{ key: 'PLACED', label: 'Placed' }, { key: 'ACCEPTED', label: 'Accepted' }, { key: 'PREPARING', label: 'Preparing' }, { key: 'OUT_FOR_DELIVERY', label: 'On the way' }, { key: 'DELIVERED', label: 'Delivered' }];
 
@@ -43,6 +44,7 @@ export default function MedicineOrderPage() {
                 <ul className="mt-3 divide-y divide-line text-sm">{o.items.map((i) => <li key={i.id} className="flex items-center justify-between gap-3 py-1.5"><MedicineImage imageUrl={i.medicine.imageUrl} name={i.medicine.name} size="xs" /><span className="min-w-0 flex-1"><span className="font-semibold">{medicineLabel(i.medicine.name, i.medicine.strength)}</span> <span className="text-muted">× {i.quantity}</span>{i.medicine.schedule !== 'OTC' && <span className="ml-1.5 align-middle"><Badge tone="violet">Rx</Badge></span>}{i.batchNumber && <span className="block text-xs text-muted">Batch {i.batchNumber}{i.expiryDate ? ` · expires ${monthYear(i.expiryDate)}` : ''}</span>}</span><span className="tnum shrink-0">{money(i.unitPriceMinor * i.quantity)}</span></li>)}<li className="flex justify-between py-1.5 font-extrabold"><span>Total</span><span className="tnum">{money(o.totalMinor)}</span></li></ul>
                 {o.transaction && <p className="mt-2 text-xs text-muted">Payment: <Badge tone={o.transaction.status === 'PAID' ? 'success' : 'warning'}>{statusLabel(o.transaction.status)}</Badge></p>}
               </Card>
+              <InvoiceDownloads transaction={o.transaction} invoices={o.invoices} />
               <div className="flex flex-wrap gap-2">
                 <a href={`/providers/${o.provider.id}`} className="inline-flex h-11 items-center gap-2 rounded-full bg-white px-4 text-sm font-semibold shadow-card"><MapPin size={14} /> Store details</a>
                 {['PLACED', 'PRESCRIPTION_REVIEW', 'ACCEPTED'].includes(o.status) && <Button variant="ghost" className="text-danger" onClick={() => setCancelling(true)}>Cancel Order</Button>}

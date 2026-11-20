@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
-import { availabilityText, bestPrice, formKind, infoSections, ingredientChips, MedicineImage, savingsText, type Availability } from './medicine-ui';
+import { availabilityText, bestPrice, formKind, infoSections, ingredientChips, MedicineImage, PhotoCredit, savingsText, type Availability } from './medicine-ui';
 
 const base: Availability = { pharmaciesTotal: 0, pharmaciesNearby: null, fromMinor: null, fromMinorNearby: null, radiusKm: null, nearest: null };
 
@@ -51,5 +51,18 @@ describe('MedicineImage', () => {
     expect(img.getAttribute('src')).toMatch(/\/api\/v1\/public\/catalogue\/medicines\/m1\/image\?v=abc$/);
     rerender(<MedicineImage imageUrl={null} name="Dolo 650" dosageForm="Oral Tablet" />);
     expect(screen.getByRole('img', { name: 'Dolo 650' }).tagName).toBe('SPAN');
+  });
+});
+
+describe('web photo credit', () => {
+  it('shows the CC credit with source link and the representative label', () => {
+    render(<PhotoCredit credit="Synthetic Artist via Wikimedia Commons" licence="CC BY-SA 4.0" sourceUrl="https://commons.wikimedia.org/wiki/File:X.jpg" representative />);
+    expect(screen.getByText(/Photo: Synthetic Artist, CC BY-SA 4.0 via Wikimedia Commons/)).toBeTruthy();
+    expect(screen.getByText(/Representative image \(not this brand's pack\)/)).toBeTruthy();
+    expect(screen.getByRole('link', { name: 'Source' }).getAttribute('href')).toBe('https://commons.wikimedia.org/wiki/File:X.jpg');
+  });
+  it('labels a representative photo in a card corner', () => {
+    render(<MedicineImage imageUrl="/api/v1/public/catalogue/medicines/m1/image?v=abc" name="Azi 500" representative size="md" />);
+    expect(screen.getByText('Representative')).toBeTruthy();
   });
 });

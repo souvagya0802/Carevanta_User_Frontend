@@ -9,6 +9,7 @@ import { useGet } from '@/lib/hooks';
 import { dateTime, money } from '@/lib/format';
 import { directionsUrl } from '@/lib/geo';
 import { AppShell, RequireSignIn } from '@/components/layout/app-shell';
+import { InvoiceDownloads, type InvoiceMeta } from '@/components/invoices';
 import { OrderTimeline } from '@/components/order-timeline';
 import { Badge, Button, Card, ErrorState, Skeleton, StatusBadge, statusLabel } from '@/components/ui/primitives';
 import { useToast } from '@/components/ui/toast';
@@ -16,7 +17,7 @@ import { useToast } from '@/components/ui/toast';
 // Leaflet needs the browser, so the map loads on the client only.
 const MapView = dynamic(() => import('@/components/map/map-view').then((m) => m.MapView), { ssr: false, loading: () => <div className="shimmer mt-3 h-40 rounded-[22px]" /> });
 interface Centre { name: string; addressLine1: string | null; city: string | null; district: string | null; pincode: string | null; latitude: number | null; longitude: number | null }
-interface Order { location?: Centre | null; id: string; reference: string; status: string; provider: { id: string; displayName: string }; patient: { fullName: string }; collectionMode: string; collectionPincode: string | null; scheduledAt: string | null; totalMinor: number; statusReason: string | null; items: { id: string; serviceName: string; priceMinor: number }[]; reports: { id: string; version: number; status: string; publishedAt: string | null; correctionReason: string | null }[]; transaction: { id: string; status: string } | null; createdAt: string }
+interface Order { location?: Centre | null; id: string; reference: string; status: string; provider: { id: string; displayName: string }; patient: { fullName: string }; collectionMode: string; collectionPincode: string | null; scheduledAt: string | null; totalMinor: number; statusReason: string | null; items: { id: string; serviceName: string; priceMinor: number }[]; reports: { id: string; version: number; status: string; publishedAt: string | null; correctionReason: string | null }[]; transaction: { id: string; status: string } | null; createdAt: string; invoices?: InvoiceMeta[] }
 const STEPS = [{ key: 'REQUESTED', label: 'Requested' }, { key: 'CONFIRMED', label: 'Confirmed' }, { key: 'SAMPLE_COLLECTED', label: 'Sample taken' }, { key: 'PROCESSING', label: 'In the lab' }, { key: 'COMPLETED', label: 'Report ready' }];
 
 export default function LabOrderPage() {
@@ -62,6 +63,7 @@ export default function LabOrderPage() {
                 )}
                 {o.transaction && <p className="mt-2 text-xs text-muted">Payment: <Badge tone={o.transaction.status === 'PAID' ? 'success' : 'warning'}>{statusLabel(o.transaction.status)}</Badge></p>}
               </Card>
+              <InvoiceDownloads transaction={o.transaction} invoices={o.invoices} />
               <Card>
                 <p className="flex items-center gap-2 text-sm font-extrabold"><FlaskConical size={16} className="text-primary" /> Reports</p>
                 {o.reports.length === 0 ? <p className="mt-1 text-sm text-muted">Your report appears here as soon as the lab publishes it. You will also get a notification.</p> : (

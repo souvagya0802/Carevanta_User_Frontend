@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useState } from 'react';
-import { CheckCircle2, Home, Minus, Plus, ShoppingBag, Store, Trash2 } from 'lucide-react';
+import { CheckCircle2, Home, ShoppingBag, Store } from 'lucide-react';
 import { api, ApiError } from '@/lib/api';
 import { useAuth } from '@/lib/auth';
 import { useAttempt } from '@/lib/attempt';
@@ -13,6 +13,7 @@ import { medicineLabel, money } from '@/lib/format';
 import { AppShell, RequireSignIn } from '@/components/layout/app-shell';
 import { PrescriptionPicker, usePrescriptions } from '@/components/prescriptions';
 import { MedicineImage } from '@/components/medicine/medicine-ui';
+import { QtyStepper } from '@/components/medicine/qty-stepper';
 import type { ProviderProfile } from '@/app/providers/[id]/page';
 import { Badge, Button, Card, EmptyState, Field, Input, OptionCard, PageTitle, Skeleton } from '@/components/ui/primitives';
 import { useToast } from '@/components/ui/toast';
@@ -70,15 +71,20 @@ export default function CartPage() {
       <PageTitle title="Your Basket" subtitle={cart.cart ? `From ${cart.cart.pharmacyName}` : undefined} />
       {!cart.cart ? <EmptyState icon={ShoppingBag} title="Your basket is empty" description="Search a medicine and choose a pharmacy that has it in stock." action={<Link href="/pharmacy"><Button>Find Medicines</Button></Link>} /> : (
         <div className="mx-auto grid max-w-3xl gap-4 lg:grid-cols-[1fr_320px]">
-          <div className="space-y-4">
-            <Card padded={false}>
+          <div className="min-w-0 space-y-4">
+            <Card padded={false} className="overflow-hidden">
               <ul className="divide-y divide-line">
                 {cart.cart.lines.map((l) => (
-                  <li key={l.medicineId} className="flex items-center gap-2 p-3 min-[380px]:gap-3 min-[380px]:p-4">
-                    <Link href={`/medicines/${l.medicineId}`} aria-label={`About ${l.name}`} className="shrink-0"><MedicineImage imageUrl={l.imageUrl} name={l.name} dosageForm={l.dosageForm} size="xs" /></Link>
-                    <span className="min-w-0 flex-1"><span className="block truncate text-sm font-extrabold">{medicineLabel(l.name, l.strength)}</span><span className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-xs text-muted"><span>{l.packSize ? `Pack of ${l.packSize} · ` : ''}{money(l.unitPriceMinor)} each</span>{l.requiresPrescription && <Badge tone="violet">Rx</Badge>}</span></span>
-                    <span className="flex shrink-0 items-center gap-1 rounded-full bg-soft p-0.5"><button type="button" aria-label={l.quantity === 1 ? `Remove ${l.name}` : `One less ${l.name}`} onClick={() => cart.setQuantity(l.medicineId, l.quantity - 1)} className="flex h-11 w-11 items-center justify-center rounded-full bg-white shadow-card">{l.quantity === 1 ? <Trash2 size={14} className="text-danger" /> : <Minus size={14} />}</button><span className="tnum w-6 text-center text-sm font-bold">{l.quantity}</span><button type="button" aria-label={`One more ${l.name}`} onClick={() => cart.setQuantity(l.medicineId, l.quantity + 1)} className="flex h-11 w-11 items-center justify-center rounded-full bg-white shadow-card"><Plus size={14} /></button></span>
-                    <span className="tnum hidden w-20 text-right text-sm font-extrabold min-[380px]:block">{money(l.unitPriceMinor * l.quantity)}</span>
+                  <li key={l.medicineId} className="flex min-w-0 items-center gap-3 p-3 sm:p-4">
+                    <Link href={`/medicines/${l.medicineId}`} aria-label={`About ${l.name}`} className="shrink-0 self-start sm:self-center"><MedicineImage imageUrl={l.imageUrl} name={l.name} dosageForm={l.dosageForm} size="xs" /></Link>
+                    {/* Phones: name, pack and unit price, then the line total on its own row; the separate total column starts at sm. */}
+                    <span className="min-w-0 flex-1">
+                      <span className="line-clamp-2 text-sm font-extrabold break-words">{medicineLabel(l.name, l.strength)}</span>
+                      <span className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-xs text-muted"><span className="min-w-0 break-words">{l.packSize ? `Pack of ${l.packSize} · ` : ''}{money(l.unitPriceMinor)} each</span>{l.requiresPrescription && <Badge tone="violet">Rx</Badge>}</span>
+                      <span className="tnum mt-0.5 block text-sm font-extrabold sm:hidden">{money(l.unitPriceMinor * l.quantity)}</span>
+                    </span>
+                    <QtyStepper quantity={l.quantity} name={l.name} onChange={(n) => cart.setQuantity(l.medicineId, n)} />
+                    <span className="tnum hidden w-20 shrink-0 text-right text-sm font-extrabold sm:block">{money(l.unitPriceMinor * l.quantity)}</span>
                   </li>
                 ))}
               </ul>
@@ -109,7 +115,7 @@ export default function CartPage() {
               )}
             </RequireSignIn>
           </div>
-          <aside>
+          <aside className="min-w-0">
             <Card className="sticky top-24">
               <p className="text-sm font-extrabold">Summary</p>
               <dl className="mt-2 space-y-1 text-sm"><div className="flex justify-between"><dt className="text-muted">Items ({cart.count})</dt><dd className="tnum font-semibold">{money(cart.totalMinor)}</dd></div><div className="flex justify-between"><dt className="text-muted">Delivery</dt><dd className="tnum font-semibold">{fulfilment === 'DELIVERY' ? 'Set by pharmacy' : '—'}</dd></div><div className="flex justify-between border-t border-line pt-2 text-base"><dt className="font-extrabold">Total</dt><dd className="tnum font-extrabold">{money(cart.totalMinor)}</dd></div></dl>

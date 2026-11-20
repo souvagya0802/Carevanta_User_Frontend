@@ -14,6 +14,9 @@ export interface CartLine { medicineId: string; name: string; strength: string |
 export interface Cart { pharmacyId: string; pharmacyName: string; locationId: string; lines: CartLine[] }
 interface CartState { cart: Cart | null; add: (pharmacy: { id: string; name: string; locationId: string }, line: Omit<CartLine, 'quantity'>, quantity?: number) => 'added' | 'replaced'; setQuantity: (medicineId: string, quantity: number) => void; clear: () => void; totalMinor: number; count: number; needsPrescription: boolean }
 
+/** Most of one medicine a basket line can hold. */
+export const MAX_QUANTITY = 100;
+
 const store = stored<Cart>('carevanta.cart');
 const Ctx = createContext<CartState | null>(null);
 const persist = (c: Cart | null) => store.set(c && c.lines.length ? c : null);
@@ -29,14 +32,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
         const replaced = !!current && current.pharmacyId !== pharmacy.id;
         const base: Cart = !current || replaced ? { pharmacyId: pharmacy.id, pharmacyName: pharmacy.name, locationId: pharmacy.locationId, lines: [] } : current;
         const existing = base.lines.find((l) => l.medicineId === line.medicineId);
-        const next = existing ? base.lines.map((l) => (l.medicineId === line.medicineId ? { ...l, quantity: Math.min(100, l.quantity + quantity) } : l)) : [...base.lines, { ...line, quantity }];
+        const next = existing ? base.lines.map((l) => (l.medicineId === line.medicineId ? { ...l, quantity: Math.min(MAX_QUANTITY, l.quantity + quantity) } : l)) : [...base.lines, { ...line, quantity }];
         persist({ ...base, lines: next });
         return replaced ? 'replaced' : 'added';
       },
       setQuantity: (medicineId, quantity) => {
         const current = store.get();
         if (!current) return;
-        persist({ ...current, lines: quantity <= 0 ? current.lines.filter((l) => l.medicineId !== medicineId) : current.lines.map((l) => (l.medicineId === medicineId ? { ...l, quantity: Math.min(100, quantity) } : l)) });
+        persist({ ...current, lines: quantity <= 0 ? current.lines.filter((l) => l.medicineId !== medicineId) : current.lines.map((l) => (l.medicineId === medicineId ? { ...l, quantity: Math.min(MAX_QUANTITY, quantity) } : l)) });
       },
       clear: () => persist(null),
       totalMinor: lines.reduce((s, l) => s + l.unitPriceMinor * l.quantity, 0),

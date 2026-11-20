@@ -11,6 +11,8 @@ import { useGet } from '@/lib/hooks';
 import { useBranding, Logo } from '@/lib/branding';
 import { usePatientUi } from '@/lib/patient-ui';
 import { LocationPill } from '@/components/map/location-pill';
+import { BasketBar, BasketLink } from '@/components/medicine/basket-link';
+import { useCart } from '@/lib/cart';
 import { Avatar, Button, cx } from '@/components/ui/primitives';
 
 /**
@@ -28,6 +30,8 @@ const TABS = [
 ];
 
 const noop = () => () => {};
+/** Pages where a phone shows the sticky View Basket bar above the bottom navigation. */
+const BASKET_BAR = (p: string) => p.startsWith('/pharmacy') || p.startsWith('/search') || p.startsWith('/medicines') || p.startsWith('/providers');
 
 /**
  * The signed-out part of the header (Sign In). While auth settles it is never shown to someone
@@ -48,6 +52,9 @@ export function AppShell({ children, hideTop }: { children: ReactNode; hideTop?:
   const hydrated = useSyncExternalStore(noop, () => true, () => false);
   const inFlight = useIsFetching() + useIsMutating();
   const busy = hydrated && inFlight > 0;
+  const cart = useCart();
+  const showBasket = !!me || cart.count > 0;
+  const basketBar = cart.count > 0 && BASKET_BAR(pathname);
   const unread = useGet<{ unread: number }>(me ? '/portal/notifications/unread-count' : null, { refetchInterval: 45_000 });
   return (
     <div className="min-h-dvh bg-canvas">
@@ -61,6 +68,7 @@ export function AppShell({ children, hideTop }: { children: ReactNode; hideTop?:
           </nav>
           <div className="ml-auto flex items-center gap-2">
             <LocationPill />
+            {showBasket && <BasketLink />}
             {me ? (
               <>
                 <Link href="/notifications" aria-label="Notifications" className="relative flex h-11 w-11 items-center justify-center rounded-full bg-white shadow-card"><Bell size={18} />{(unread.data?.unread ?? 0) > 0 && <span className="absolute -top-0.5 -right-0.5 h-4 min-w-4 rounded-full bg-danger px-1 text-center text-[10px] font-bold leading-4 text-white">{unread.data!.unread}</span>}</Link>
@@ -77,6 +85,7 @@ export function AppShell({ children, hideTop }: { children: ReactNode; hideTop?:
           <Link href="/" aria-label={`${branding.name} home`} className="flex shrink-0 items-center gap-2"><Logo size="nav" className="rounded-2xl" /><span className="hidden text-base font-extrabold tracking-tight min-[400px]:inline">{branding.name}</span></Link>
           <div className="ml-auto flex min-w-0 items-center gap-2">
             <LocationPill compact />
+            {showBasket && <BasketLink />}
             {me ? <Link href="/notifications" aria-label="Notifications" className="relative flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-white shadow-card"><Bell size={18} />{(unread.data?.unread ?? 0) > 0 && <span className="absolute -top-0.5 -right-0.5 h-4 min-w-4 rounded-full bg-danger px-1 text-center text-[10px] font-bold leading-4 text-white">{unread.data!.unread}</span>}</Link> : restoring ? <span aria-hidden className="shimmer block h-11 w-11 shrink-0 rounded-full" /> : <SignedOutSlot pending={pending} placeholder={<span aria-hidden className="shimmer block h-11 w-11 shrink-0 rounded-full" />}><Link href="/login" className="flex h-11 shrink-0 items-center whitespace-nowrap rounded-full bg-primary px-4 text-sm font-semibold text-white shadow-glow">Sign In</Link></SignedOutSlot>}
           </div>
         </header>
@@ -84,11 +93,12 @@ export function AppShell({ children, hideTop }: { children: ReactNode; hideTop?:
       {ui.announcement && (
         <div role="status" className={cx('mx-auto max-w-6xl px-4 lg:px-6')}><div className={cx('rounded-2xl px-4 py-2 text-sm font-medium', ui.announcement.tone === 'warning' ? 'bg-warning-soft text-ink' : ui.announcement.tone === 'success' ? 'bg-success-soft text-ink' : 'bg-primary-soft text-ink')}>{ui.announcement.text}{ui.announcement.link && <> <a href={ui.announcement.link} className="underline underline-offset-2" target="_blank" rel="noreferrer">Read more</a></>}</div></div>
       )}
-      <main className="mx-auto w-full max-w-6xl px-4 pt-3 pb-28 lg:px-6 lg:pt-6 lg:pb-12">
+      <main className={cx('mx-auto w-full max-w-6xl px-4 pt-3 lg:px-6 lg:pt-6 lg:pb-12', basketBar ? 'pb-44' : 'pb-28')}>
         {/* While a stored session restores, the splash stands in for the page so nothing renders signed-out and no page query competes with the sign-in. */}
         {(restoring || pending) && <div className={restoring ? undefined : 'when-session'}><Splash /></div>}
         {!restoring && <div className={pending ? 'when-no-session' : 'contents'}><div key={pathname} className="animate-fade-up">{children}</div></div>}
       </main>
+      {basketBar && <BasketBar />}
       {/* Phone bottom nav */}
       {/* Five equal columns that can shrink, so the bar never runs past the screen edge, even at 320 px. */}
       <nav aria-label="Quick navigation" className="fixed inset-x-2 bottom-[max(10px,env(safe-area-inset-bottom))] z-40 min-[380px]:inset-x-3 lg:hidden">
